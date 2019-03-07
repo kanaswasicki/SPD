@@ -1,33 +1,48 @@
-import operator
-TABLICA_RPQ = []
-i = 0
-r = 20
-p = 5
-q = 1
+import itertools
+import math
+
+# funckja odczytująca wartości z pliku tekstowego
 
 
-def zapisywanie_do_listy(r, p, q):
-    tablica_pomocnicza = [int(r), int(p), int(q)]
-    global TABLICA_RPQ
-    global i
-    TABLICA_RPQ = TABLICA_RPQ + [0]
-    TABLICA_RPQ[i] = tablica_pomocnicza
-    i += 1
+def odczyt():
+    theFile = open("data.txt", "r")
+    theInts = []
+    for val in theFile.read().split():
+        theInts.append(int(val))
+    theFile.close()
+    return theInts
 
 
-def wypisywanie_z_listy():
-    print("Wypisywanie wierszy po kolej")
-    for a in TABLICA_RPQ:
-        print(a)
+# segregowanie wartosci do pozniejszego wykorzystania w algorytmie
+Wartosci = odczyt()
+tabela = []
+n = Wartosci[0]
+ilosc = Wartosci[1]
+for a in range(2, len(Wartosci), ilosc):
+    tabela_pomocnicza = []
+    for b in range(0, ilosc):
+        tabela_pomocnicza = tabela_pomocnicza+[Wartosci[a+b]]
+    tabela.append(tabela_pomocnicza)
 
+# wypisanie wszystkich permutacji
+zakres = []
+for a in range(n):
+    zakres.append(a)
+permutacje = list(itertools.permutations(zakres))
+Cmax = [0]*math.factorial(n)
+kolejnosc = 0
+# korzystanie z przegladu zupelnego do obliczenia wartosci minimalnej
+for permutacja in permutacje:
+    m = [0]*ilosc
+    for i in permutacja:
+        for j in range(0, ilosc):
+            if j == 0:
+                m[j] += tabela[i][j]
+            else:
+                m[j] = max(m[j], m[j-1])+tabela[i][j]
+    Cmax[kolejnosc] = max(m)
+    kolejnosc += 1
+a = int(Cmax.index(min(Cmax)))
 
-for j in range(1, 10):
-    # r = input("Podaj wartość r: ")
-    # p = input("Podaj wartość p: ")
-    # q = input("Podaj wartość q: ")
-
-    zapisywanie_do_listy(r, p, q)
-    r -= 2
-    q += 2
-
-wypisywanie_z_listy()
+print(
+    f"Dla kolejnosci {permutacje[a]} otrzymano optymalny czas na maszynach: {min(Cmax)}")
