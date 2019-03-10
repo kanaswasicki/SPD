@@ -6,15 +6,15 @@ def odczyt():
     theFile = open("data.txt", "r")
     theInts = []
     for val in theFile.read().split():
-        theInts.append(int(val))
+        theInts.append(float(val))
     theFile.close()
     return theInts
 
 
 Wartosci = odczyt()
 tabela = []
-n = Wartosci[0]
-ilosc = Wartosci[1]
+n = int(Wartosci[0])
+ilosc = int(Wartosci[1])
 for a in range(2, len(Wartosci), ilosc):
     tabela_pomocnicza = []
     for b in range(0, ilosc):
