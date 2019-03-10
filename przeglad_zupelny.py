@@ -1,8 +1,6 @@
 import itertools
 import math
 
-# funckja odczytująca wartości z pliku tekstowego
-
 
 def odczyt():
     theFile = open("data.txt", "r")
@@ -13,7 +11,6 @@ def odczyt():
     return theInts
 
 
-# segregowanie wartosci do pozniejszego wykorzystania w algorytmie
 Wartosci = odczyt()
 tabela = []
 n = Wartosci[0]
@@ -24,14 +21,13 @@ for a in range(2, len(Wartosci), ilosc):
         tabela_pomocnicza = tabela_pomocnicza+[Wartosci[a+b]]
     tabela.append(tabela_pomocnicza)
 
-# wypisanie wszystkich permutacji
+
 zakres = []
 for a in range(n):
     zakres.append(a)
 permutacje = list(itertools.permutations(zakres))
 Cmax = [0]*math.factorial(n)
 kolejnosc = 0
-# korzystanie z przegladu zupelnego do obliczenia wartosci minimalnej
 for permutacja in permutacje:
     m = [0]*ilosc
     for i in permutacja:
@@ -43,6 +39,11 @@ for permutacja in permutacje:
     Cmax[kolejnosc] = max(m)
     kolejnosc += 1
 a = int(Cmax.index(min(Cmax)))
-
+j = 0
+for i in permutacje:
+    print(
+        f"Dla kolejnosci {i} otrzymano czas na maszynach: {Cmax[j]}")
+    j += 1
+print("-"*100)
 print(
     f"Dla kolejnosci {permutacje[a]} otrzymano optymalny czas na maszynach: {min(Cmax)}")
