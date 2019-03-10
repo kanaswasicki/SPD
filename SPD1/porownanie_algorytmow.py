@@ -109,8 +109,10 @@ def przeglad_zupelny(n, ilosc, tabela):
     return permutacje, Cmax
 
 
+x = PrettyTable()
+y = PrettyTable()
 for i in range(5, 10):
-    x = PrettyTable()
+
     x.field_names = ["Algorytm Johnsona",
                      "Permutacja", "Czas wykonania", "Cmax"]
     plik = "SPD1\\data\\"+str(i)+"data.txt"
@@ -124,9 +126,7 @@ for i in range(5, 10):
     Cmax = obliczenie_Cmax(lista, ilosc)
     stop = time.time_ns() / (10**9)
     duration = stop - start
-    x.add_row(["-", lista, duration, Cmax])
-
-    y = PrettyTable()
+    x.add_row([i, lista, duration, Cmax])
     y.field_names = ["Przeglad zupelny",
                      "Permutacja", "Czas wykonania", "Cmax"]
     start = time.time_ns() / (10**9)
@@ -134,7 +134,8 @@ for i in range(5, 10):
     permutacje, Cmax = przeglad_zupelny(n, ilosc, tabela)
     stop = time.time_ns() / (10**9)
     duration = stop - start
-    y.add_row(["-", permutacje[int(Cmax.index(min(Cmax)))], duration, min(Cmax)])
+    y.add_row([i, permutacje[int(Cmax.index(min(Cmax)))], duration, min(Cmax)])
+
 print(x)
 print(y)
 
