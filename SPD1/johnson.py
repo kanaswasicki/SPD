@@ -1,6 +1,6 @@
 import itertools
 import math
-import datetime
+import time
 from prettytable import PrettyTable
 
 # funkcja odczytująca wartości z pliku tekstowego
@@ -99,7 +99,7 @@ x.field_names = ["Permutacja", "Czas wykonania", "Cmax"]
 plik = ["SPD1\\data\\9data.txt"]
 
 for i in range(0, len(plik)):
-    start = datetime.datetime.now()
+    start = time.time_ns() / (10**9)
     tabela, n, ilosc = przygotowanie_danych(plik[i])
     if ilosc == 3:
         reduced_table = reduce_machines(tabela)
@@ -107,8 +107,8 @@ for i in range(0, len(plik)):
     if ilosc == 2:
         lista = Johnson2(tabela)
     Cmax = obliczenie_Cmax(lista, ilosc)
-    duration = datetime.datetime.now() - start
-    x.add_row([lista, duration.microseconds, Cmax])
+    duration = time.time_ns() / (10**9) - start
+    x.add_row([lista, duration, Cmax])
     print(
         f"Dla kolejnosci {lista} otrzymano optymalny czas na maszynach: {Cmax}")
     print(x)
