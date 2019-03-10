@@ -69,6 +69,17 @@ def Johnson2(tabela):
 # sprowadzenie zadania 3 maszynowego do zadania 2 maszynowego
 
 
+def obliczenie_Cmax(permutacja, ilosc):
+    m = [0]*ilosc
+    for i in permutacja:
+        for j in range(0, ilosc):
+            if j == 0:
+                m[j] += tabela[i][j]
+            else:
+                m[j] = max(m[j], m[j-1])+tabela[i][j]
+    return max(m)
+
+
 def reduce_machines(table):
     reduced_table = []
     for i in range(0, len(table)):
@@ -81,7 +92,7 @@ def reduce_machines(table):
 
 #################################################
 # zastosowanie algorytmu Johnsona dla 2 maszyn
-plik = ["2maszyny.txt", "3maszyny.txt", "data.txt"]
+plik = ["SPD1\\data\\9data.txt"]
 for i in range(0, len(plik)):
     tabela, n, ilosc = przygotowanie_danych(plik[i])
     if ilosc == 3:
@@ -89,4 +100,6 @@ for i in range(0, len(plik)):
         lista = Johnson2(reduced_table)
     if ilosc == 2:
         lista = Johnson2(tabela)
-    print(lista)
+    Cmax = obliczenie_Cmax(lista, ilosc)
+    print(
+        f"Dla kolejnosci {lista} otrzymano optymalny czas na maszynach: {Cmax}")
