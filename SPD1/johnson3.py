@@ -2,13 +2,27 @@ import itertools
 import math
 
 # funkcja odczytująca wartości z pliku tekstowego
-def odczyt():
-    theFile = open("3maszyny.txt", "r")
+def odczyt(nazwa):
+    theFile = open(nazwa, "r")
     theFloats = []
     for val in theFile.read().split():
         theFloats.append(float(val))
     theFile.close()
     return theFloats
+
+# segregowanie danych do pozniejszego wykorzystania w algorytmie
+def przygotowanie_danych(nazwa):
+    Wartosci = odczyt(nazwa)
+    tabela = []
+    n = int(Wartosci[0])
+    ilosc = int(Wartosci[1])
+    for a in range(2, len(Wartosci), ilosc):
+        tabela_pomocnicza = []
+        for b in range(0, ilosc):
+            tabela_pomocnicza = tabela_pomocnicza+[Wartosci[a+b]]
+        tabela.append(tabela_pomocnicza)
+    return tabela, n, ilosc
+
 
 # funkcja zwracająca najmniejsza wartość w tablicy
 def get_min_value(table):
@@ -29,6 +43,23 @@ def remove_job(table, val):
                 return i, j
 
 
+def Johnson2(tabela):
+    lista = []
+    for i in range(0, n):
+        lista.append(0)
+    j = 0
+    k = 0
+    for i in range(0, n):
+        minval = get_min_value(tabela)
+        removed = remove_job(tabela, minval)
+        if removed[1] == 1:
+            lista[n-1-j] = removed[0]
+            j += 1
+        else:
+            lista[k] = removed[0]
+            k += 1
+    return lista
+
 # sprowadzenie zadania 3 maszynowego do zadania 2 maszynowego
 def reduce_machines(table):
     reduced_table = []
@@ -40,34 +71,13 @@ def reduce_machines(table):
     return reduced_table
 
 
-# segregowanie wartosci do pozniejszego wykorzystania w algorytmie
-Wartosci = odczyt()
-tabela = []
-n = int(Wartosci[0])
-ilosc = int(Wartosci[1])
-for a in range(2, len(Wartosci), ilosc):
-    tabela_pomocnicza = []
-    for b in range(0, ilosc):
-        tabela_pomocnicza = tabela_pomocnicza+[Wartosci[a+b]]
-    tabela.append(tabela_pomocnicza)
 
 
+#################################################
 # zastosowanie algorytmu Johnsona dla 2 maszyn
+plik = "3maszyny.txt"
+tabela, n, ilosc = przygotowanie_danych(plik)
 reduced_table = reduce_machines(tabela)
-lista = []
-for i in range(0, n):
-    lista.append(0)
-
-j = 0
-k = 0
-for i in range(0, n):
-    minval = get_min_value(reduced_table)
-    removed = remove_job(reduced_table, minval)
-    if removed[1] == 1:
-        lista[n-1-j] = removed[0]
-        j += 1
-    else:
-        lista[k] = removed[0]
-        k += 1
-
+lista = Johnson2(reduced_table)
 print(lista)
+
