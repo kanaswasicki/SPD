@@ -75,9 +75,13 @@ def reduce_machines(table):
 
 #################################################
 # zastosowanie algorytmu Johnsona dla 2 maszyn
-plik = "3maszyny.txt"
-tabela, n, ilosc = przygotowanie_danych(plik)
-reduced_table = reduce_machines(tabela)
-lista = Johnson2(reduced_table)
-print(lista)
+plik = ["2maszyny.txt", "3maszyny.txt", "data.txt"]
+for i in range(0, len(plik)):
+    tabela, n, ilosc = przygotowanie_danych(plik[i])
+    if ilosc == 3:
+        reduced_table = reduce_machines(tabela)
+        lista = Johnson2(reduced_table)
+    if ilosc == 2:
+        lista = Johnson2(tabela)
+    print(lista)
 
