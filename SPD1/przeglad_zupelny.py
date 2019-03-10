@@ -1,5 +1,7 @@
 import itertools
 import math
+import time
+from prettytable import PrettyTable
 
 
 def odczyt(nazwa):
@@ -57,7 +59,13 @@ def wypisanie_wynikow(Cmax, permutacje):
         f"Dla kolejnosci {permutacje[a]} otrzymano optymalny czas na maszynach: {min(Cmax)}")
 
 
-plik = "data.txt"
+x = PrettyTable()
+x.field_names = ["Permutacja", "Czas wykonania", "Cmax"]
+plik = "SPD1\\data\\9data.txt"
+start = time.time_ns() / (10**9)
 tabela, n, ilosc = przygotowanie_danych(plik)
 permutacje, Cmax = przeglad_zupelny(n, ilosc, tabela)
-wypisanie_wynikow(Cmax, permutacje)
+duration = time.time_ns() / (10**9) - start
+x.add_row([permutacje[int(Cmax.index(min(Cmax)))], duration, min(Cmax)])
+
+print(x)
