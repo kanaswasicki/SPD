@@ -12,6 +12,24 @@ def odczyt():
     theFile.close()
     return theFloats
 
+# funkcja zwracająca najmniejsza wartość w tablicy
+def get_min_value(table):
+    min_values = []
+    for i in range(0, len(table)):
+        min_value = min(table[i])
+        min_values.append(min_value)
+
+    return min(min_values)
+
+# funkcja usuwająca zadanie z wartoscia czasu podana jako argument val
+def remove_job(table, val):
+    for i in range(0, len(table)):
+        for j in range(0, len(table[i])):
+            if table[i][j] == val:
+                for k in range(0, len(table[i])):
+                    table[i][k] = 999
+                return i, j
+
 # segregowanie wartosci do pozniejszego wykorzystania w algorytmie
 Wartosci = odczyt()
 tabela = []
@@ -24,23 +42,8 @@ for a in range(2, len(Wartosci), ilosc):
     tabela.append(tabela_pomocnicza)
 
 
-def get_min_value(table):
-    min_values = []
-    for i in range(0, len(table)):
-        min_value = min(table[i])
-        min_values.append(min_value)
 
-    return min(min_values)
-
-
-def remove_job(table, val):
-    for i in range(0, len(table)):
-        for j in range(0, len(table[i])):
-            if table[i][j] == val:
-                for k in range(0, ilosc):
-                    table[i][k] = 999
-                return i, j
-
+# zastosowanie algorytmu Johnsona dla 2 maszyn
 
 lista = []
 for i in range(0, n):
