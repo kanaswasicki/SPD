@@ -2,6 +2,8 @@ import itertools
 import math
 
 # funkcja odczytująca wartości z pliku tekstowego
+
+
 def odczyt(nazwa):
     theFile = open(nazwa, "r")
     theFloats = []
@@ -11,6 +13,8 @@ def odczyt(nazwa):
     return theFloats
 
 # segregowanie danych do pozniejszego wykorzystania w algorytmie
+
+
 def przygotowanie_danych(nazwa):
     Wartosci = odczyt(nazwa)
     tabela = []
@@ -34,6 +38,8 @@ def get_min_value(table):
     return min(min_values)
 
 # funkcja usuwająca zadanie z wartoscia czasu podana jako argument val
+
+
 def remove_job(table, val):
     for i in range(0, len(table)):
         for j in range(0, len(table[i])):
@@ -61,16 +67,16 @@ def Johnson2(tabela):
     return lista
 
 # sprowadzenie zadania 3 maszynowego do zadania 2 maszynowego
+
+
 def reduce_machines(table):
     reduced_table = []
-    for i in range(0,len(table)):
+    for i in range(0, len(table)):
         temp_table = []
         temp_table.append(table[i][0] + table[i][1])
         temp_table.append(table[i][1] + table[i][2])
         reduced_table.append(temp_table)
     return reduced_table
-
-
 
 
 #################################################
@@ -84,4 +90,3 @@ for i in range(0, len(plik)):
     if ilosc == 2:
         lista = Johnson2(tabela)
     print(lista)
-
