@@ -95,20 +95,20 @@ def reduce_machines(table):
 #################################################
 # zastosowanie algorytmu Johnsona dla 2 maszyn
 x = PrettyTable()
-x.field_names = ["Permutacja", "Czas wykonania", "Cmax"]
-plik = ["SPD1\\data\\9data.txt"]
+x.field_names = ["Algorytm Johnsona",
+                 "Permutacja", "Cmax", "Czas wykonania"]
+for i in range(5, 30):
 
-for i in range(0, len(plik)):
-    start = time.time_ns() / (10**9)
-    tabela, n, ilosc = przygotowanie_danych(plik[i])
+    plik = "SPD1\\data\\"+str(i)+"data.txt"
+    start = time.clock()
+    tabela, n, ilosc = przygotowanie_danych(plik)
     if ilosc == 3:
         reduced_table = reduce_machines(tabela)
         lista = Johnson2(reduced_table)
     if ilosc == 2:
         lista = Johnson2(tabela)
     Cmax = obliczenie_Cmax(lista, ilosc)
-    duration = time.time_ns() / (10**9) - start
-    x.add_row([lista, duration, Cmax])
-    print(
-        f"Dla kolejnosci {lista} otrzymano optymalny czas na maszynach: {Cmax}")
-    print(x)
+    stop = time.clock()
+    duration = stop - start
+    x.add_row([i, lista, Cmax, duration])
+print(x)
