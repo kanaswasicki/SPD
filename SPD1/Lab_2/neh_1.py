@@ -100,33 +100,60 @@ def utworz_graf(Pi, ilosc, tabela):
     graf = []
     for i in Pi:
         graf.append(tabela[i])
-    print(graf)
     obciazenie = []
+    for k in range(len(graf)):
+        obciazenie.append([0]*ilosc)
+
     for i in range(0, len(graf)):
         if i == 0:
-            temp = []
             for j in range(0, ilosc):
                 if j == 0:
-                    temp = temp + [graf[i][j]]
-                    obciazenie.append(temp)
+                    obciazenie[i][j] = graf[i][j]
                 else:
-                    temp = temp + [obciazenie[i][j-1] + graf[i][j]]
-            obciazenie.append(temp)
-            print(obciazenie)
+                    obciazenie[i][j] = obciazenie[i][j-1] + graf[i][j]
         else:
-            temp = []
             for j in range(0, ilosc):
                 if j == 0:
-                    temp = temp + [obciazenie[i-1][j] + graf[i][j]]
+                    obciazenie[i][j] = obciazenie[i-1][j] + graf[i][j]
                 else:
-                    temp = temp + max([obciazenie[i-1][j], obciazenie[i][j-1]]) + graf[i][j]
-            obciazenie.append(temp)
-            print(obciazenie)
+                    obciazenie[i][j] = max([obciazenie[i-1][j], obciazenie[i][j-1]]) + graf[i][j]
+ #################################################################
+    #print(obciazenie)
+    #obciazenie = []
+    #for i in range(0, len(graf)):
+    #    m = 0
+    #    obciazenie_linii = []
+    #    for j in range(0, ilosc):
+    #        if i == 0:
+    #            m += graf[i][j]
+    #            obciazenie_linii.extend([m])
+    #        elif i == 1:
+    #            m = max(m, obciazenie[i - 1][j]) + graf[i][j]
+    #            obciazenie_linii.extend([m])
+    #        else:
+    #            m = max(obciazenie[i - 1][j], m) + graf[i][j]
+    #            obciazenie_linii.extend([m])
+    #    obciazenie.append(obciazenie_linii)
+##################################################################
+    i = 0;
+    j = 0;
+    sciezka = []
+    while (i !=len(graf)-1)or(j!=ilosc-1) :
+        if obciazenie[len(graf)-i-1][ilosc-j-1]-graf[len(graf)-i-1][ilosc-j-1] == obciazenie[len(graf)-i-2][ilosc-j-1]:
+            sciezka.append([len(graf)-i-1, ilosc-j-1])
+            i = i+1
+
+        elif obciazenie[len(graf)-i-1][ilosc-j-1]-graf[len(graf)-i-1][ilosc-j-1] == obciazenie[len(graf)-i-1][ilosc-j-2]:
+            sciezka.append([len(graf)-i-1, ilosc-j-1])
+            j = j+1
+    print(sciezka)
+    return sciezka
+
+
 
 # GLOWNY KOD
 plik = "data.txt"
 tabela, n, ilosc = przygotowanie_danych(plik)
-print(tabela)
 start = time.time_ns() / (10**9)
 kolejnosc = sortowanie_tabeli(n, ilosc, tabela)
 najlepsza_kolejnosc = []
@@ -136,7 +163,8 @@ for i in kolejnosc:
 
     permutacje = tworzenie_permutacji(i, najlepsza_kolejnosc)
     najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
-    G = utworz_graf(najlepsza_kolejnosc,ilosc,tabela)
+    sciezka = utworz_graf(najlepsza_kolejnosc, ilosc, tabela)
+
 duration = time.time_ns() / (10**9) - start
 x.add_row([najlepsza_kolejnosc, Cmax, duration])
 print(x)
