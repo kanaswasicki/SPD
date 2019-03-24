@@ -101,14 +101,15 @@ def wypisanie_wynikow(Cmax, permutacje):
 # GLOWNY KOD
 plik = "SPD1\\Lab_2\\data.txt"
 tabela, n, ilosc = przygotowanie_danych(plik)
+start = time.time_ns() / (10**9)
 kolejnosc = sortowanie_tabeli(n, ilosc, tabela)
 najlepsza_kolejnosc = []
 x = PrettyTable()
 x.field_names = ["Permutacja", "Cmax", "Czas wykonywania"]
 for i in kolejnosc:
-    start = time.time_ns() / (10**9)
+
     permutacje = tworzenie_permutacji(i, najlepsza_kolejnosc)
     najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
-    duration = time.time_ns() / (10**9) - start
-    x.add_row([najlepsza_kolejnosc, Cmax, duration])
+duration = time.time_ns() / (10**9) - start
+x.add_row([najlepsza_kolejnosc, Cmax, duration])
 print(x)
