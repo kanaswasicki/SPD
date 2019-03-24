@@ -138,7 +138,7 @@ def utworz_graf(Pi, ilosc, tabela):
     i = 0;
     j = 0;
     sciezka = []
-    while (i !=len(graf)-1)and(j!=ilosc-1) :
+    while (i !=len(graf)-1)or(j!=ilosc-1) :
         if obciazenie[len(graf)-i-1][ilosc-j-1]-graf[len(graf)-i-1][ilosc-j-1] == obciazenie[len(graf)-i-2][ilosc-j-1]:
             sciezka.append([len(graf)-i-1, ilosc-j-1])
             i = i+1
