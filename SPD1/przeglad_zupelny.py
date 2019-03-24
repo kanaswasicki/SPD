@@ -60,12 +60,13 @@ def wypisanie_wynikow(Cmax, permutacje):
 
 
 x = PrettyTable()
-x.field_names = ["Permutacja", "Czas wykonania", "Cmax"]
-plik = "SPD1\\data\\9data.txt"
-start = time.time_ns() / (10**9)
-tabela, n, ilosc = przygotowanie_danych(plik)
-permutacje, Cmax = przeglad_zupelny(n, ilosc, tabela)
-duration = time.time_ns() / (10**9) - start
-x.add_row([permutacje[int(Cmax.index(min(Cmax)))], duration, min(Cmax)])
+x.field_names = ["Brute Force", "Permutacja", "Czas wykonania", "Cmax"]
+for i in range(5, 11):
+    plik = "SPD1\\data\\"+str(i)+"data.txt"
+    start = time.clock()
+    tabela, n, ilosc = przygotowanie_danych(plik)
+    permutacje, Cmax = przeglad_zupelny(n, ilosc, tabela)
+    duration = time.clock() - start
+    x.add_row([i, permutacje[int(Cmax.index(min(Cmax)))], duration, min(Cmax)])
 
 print(x)
