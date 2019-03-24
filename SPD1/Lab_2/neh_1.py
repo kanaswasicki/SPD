@@ -164,7 +164,7 @@ def neh_mod1(sciezka,graf,i,kolejnosc):
                 index = i[0]
     if index == zadanie_odrzucone:
         return -1
-    return index
+    return kolejnosc[index]
 
 
 
@@ -181,11 +181,13 @@ for i in kolejnosc:
     najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
     sciezka, graf = utworz_graf(najlepsza_kolejnosc, ilosc, tabela)
     X = neh_mod1(sciezka, graf, i, najlepsza_kolejnosc)
-    print(najlepsza_kolejnosc)
+    print(najlepsza_kolejnosc, Cmax)
     if X != -1:
-        najlepsza_kolejnosc.pop(X)
+        najlepsza_kolejnosc.remove(X)
+        print("po usunieciu",najlepsza_kolejnosc)
         permutacje = tworzenie_permutacji(X, najlepsza_kolejnosc)
         najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
+        print("po zmianach", najlepsza_kolejnosc, Cmax)
 
 duration = time.time_ns() / (10**9) - start
 x.add_row([najlepsza_kolejnosc, Cmax, duration])
