@@ -146,8 +146,25 @@ def utworz_graf(Pi, ilosc, tabela):
         elif obciazenie[len(graf)-i-1][ilosc-j-1]-graf[len(graf)-i-1][ilosc-j-1] == obciazenie[len(graf)-i-1][ilosc-j-2]:
             sciezka.append([len(graf)-i-1, ilosc-j-1])
             j = j+1
-    print(sciezka)
-    return sciezka
+    sciezka.append([0, 0])
+    return sciezka, graf
+
+
+def neh_mod1(sciezka,graf,i,kolejnosc):
+    max = 0;
+    index = 999;
+    zadanie_odrzucone = 999
+    for k in range(len(kolejnosc)):
+        if i == kolejnosc[k]:
+            zadanie_odrzucone = k
+    for i in sciezka:
+        if graf[i[0]][i[1]] > max:
+            if i[1] != zadanie_odrzucone:
+                max = graf[i[0]][i[1]]
+                index = i[0]
+    if index == zadanie_odrzucone:
+        return -1
+    return index
 
 
 
@@ -160,10 +177,15 @@ najlepsza_kolejnosc = []
 x = PrettyTable()
 x.field_names = ["Permutacja", "Cmax", "Czas wykonywania"]
 for i in kolejnosc:
-
     permutacje = tworzenie_permutacji(i, najlepsza_kolejnosc)
     najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
-    sciezka = utworz_graf(najlepsza_kolejnosc, ilosc, tabela)
+    sciezka, graf = utworz_graf(najlepsza_kolejnosc, ilosc, tabela)
+    X = neh_mod1(sciezka, graf, i, najlepsza_kolejnosc)
+    print(najlepsza_kolejnosc)
+    if X != -1:
+        najlepsza_kolejnosc.pop(X)
+        permutacje = tworzenie_permutacji(X, najlepsza_kolejnosc)
+        najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
 
 duration = time.time_ns() / (10**9) - start
 x.add_row([najlepsza_kolejnosc, Cmax, duration])
