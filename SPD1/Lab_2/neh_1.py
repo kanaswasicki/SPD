@@ -100,33 +100,32 @@ def utworz_graf(Pi, ilosc, tabela):
     graf = []
     for i in Pi:
         graf.append(tabela[i])
-    print(graf)
     obciazenie = []
+    for k in range(len(graf)):
+        obciazenie.append([0]*ilosc)
+
     for i in range(0, len(graf)):
         if i == 0:
             temp = []
             for j in range(0, ilosc):
                 if j == 0:
-                    temp = temp + [graf[i][j]]
-                    obciazenie.append(temp)
+                    obciazenie[i][j] = graf[i][j]
                 else:
-                    temp = temp + [obciazenie[i][j-1] + graf[i][j]]
-            obciazenie.append(temp)
-            print(obciazenie)
+                    obciazenie[i][j] = obciazenie[i][j-1] + graf[i][j]
+
         else:
             temp = []
             for j in range(0, ilosc):
                 if j == 0:
-                    temp = temp + [obciazenie[i-1][j] + graf[i][j]]
+                    obciazenie[i][j] = obciazenie[i-1][j] + graf[i][j]
                 else:
-                    temp = temp + max([obciazenie[i-1][j], obciazenie[i][j-1]]) + graf[i][j]
-            obciazenie.append(temp)
-            print(obciazenie)
+                    obciazenie[i][j] = max([obciazenie[i-1][j], obciazenie[i][j-1]]) + graf[i][j]
+    print(obciazenie)
+
 
 # GLOWNY KOD
 plik = "data.txt"
 tabela, n, ilosc = przygotowanie_danych(plik)
-print(tabela)
 start = time.time_ns() / (10**9)
 kolejnosc = sortowanie_tabeli(n, ilosc, tabela)
 najlepsza_kolejnosc = []
