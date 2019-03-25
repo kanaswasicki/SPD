@@ -1,5 +1,6 @@
 import itertools
 import math
+import copy
 import time
 from prettytable import PrettyTable
 
@@ -147,24 +148,89 @@ def utworz_graf(Pi, ilosc, tabela):
             sciezka.append([len(graf)-i-1, ilosc-j-1])
             j = j+1
     sciezka.append([0, 0])
-    return sciezka, graf
+    return sciezka, graf, obciazenie
+def utworz_graf2(Pi, ilosc, tabela):
+    graf = []
+    for i in Pi:
+        graf.append(tabela[i])
+    obciazenie = []
+    for k in range(len(graf)):
+        obciazenie.append([0]*ilosc)
+
+    for i in range(1, len(graf)+1):
+        if i == 0:
+            for j in range(1, ilosc+1):
+                if j == 0:
+                    obciazenie[-i][-j] = graf[-i][-j]
+                else:
+                    obciazenie[-i][-j] = obciazenie[-i][-j+1] + graf[-i][-j]
+        else:
+            for j in range(1, ilosc+1):
+                if j == 0:
+                    obciazenie[-i][-j] = obciazenie[-i+1][-j] + graf[-i][-j]
+                else:
+                    obciazenie[-i][-j] = max([obciazenie[-i+1][-j], obciazenie[-i][-j+1]]) + graf[-i][-j]
+    return obciazenie
+
+def dodaj_do_grafu(graf,obciazenie1,obciazenie2,item,tablica):
+    for i in range(len(graf)+1):
+        graf.insert(i, tablica[item])
+        obciazenie1.insert(i,[0] * ilosc)
+        obciazenie2.insert(i, [0] * ilosc)
+        if i == 0:
+            for j in range(0, ilosc):
+                if j == 0:
+                    obciazenie1[i][j] = graf[i][j]
+                else:
+                    obciazenie1[i][j] = obciazenie1[i][j - 1] + graf[i][j]
+        else:
+            for j in range(0, ilosc):
+                if j == 0:
+                    obciazenie1[i][j] = obciazenie1[i - 1][j] + graf[i][j]
+                else:
+                    obciazenie1[i][j] = max([obciazenie1[i - 1][j], obciazenie1[i][j - 1]]) + graf[i][j]
+
+        i = i+1
+        if i == 0:
+            for j in range(1, ilosc+1):
+                if j == 0:
+                    obciazenie2[-i][-j] = graf[-i][-j]
+                else:
+                    obciazenie2[-i][-j] = obciazenie2[-i][-j+1] + graf[-i][-j]
+        else:
+            for j in range(1, ilosc+1):
+                if j == 0:
+                    obciazenie2[-i][-j] = obciazenie2[-i+1][-j] + graf[-i][-j]
+                else:
+                    obciazenie2[-i][-j] = max([obciazenie2[-i+1][-j], obciazenie2[-i][-j+1]]) + graf[-i][-j]
+        print(obciazenie1)
+        print(obciazenie2)
+        print(graf)
+        graf.remove(tablica[item])
 
 
-def neh_mod1(sciezka,graf,i,kolejnosc):
-    max = 0;
-    index = 999;
+def neh_akceleracja(sciezka,graf,i,kolejnosc):
+    kolejka = copy.deepcopy(kolejnosc)
     zadanie_odrzucone = 999
+    zadania = [0]*len(kolejnosc)
+
     for k in range(len(kolejnosc)):
         if i == kolejnosc[k]:
             zadanie_odrzucone = k
+
+
     for i in sciezka:
         if i[0] != zadanie_odrzucone:
-            if graf[i[0]][i[1]] > max:
-                max = graf[i[0]][i[1]]
-                index = i[0]
-    if (index == zadanie_odrzucone)or(index == 999):
+             zadania[i[0]] += 1
+    index = [i for i, x in enumerate(zadania) if x == max(zadania)]
+    if index == zadanie_odrzucone:
         return -1
-    return kolejnosc[index]
+    if len(index) > 1:
+        temp = []
+        for i in index:
+            temp.append(sum(graf[i]))
+        ind = temp.index(max(temp))
+    return kolejnosc[index[ind]]
 
 
 
@@ -175,19 +241,18 @@ start = time.time_ns() / (10**9)
 kolejnosc = sortowanie_tabeli(n, ilosc, tabela)
 najlepsza_kolejnosc = []
 x = PrettyTable()
+graf = []
+obciazenie1 = []
+obciazenie2 = []
 x.field_names = ["Permutacja", "Cmax", "Czas wykonywania"]
 for i in kolejnosc:
+    dodaj_do_grafu(graf,obciazenie1,obciazenie2,i,tabela)
     permutacje = tworzenie_permutacji(i, najlepsza_kolejnosc)
     najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
-    sciezka, graf = utworz_graf(najlepsza_kolejnosc, ilosc, tabela)
-    X = neh_mod1(sciezka, graf, i, najlepsza_kolejnosc)
-    #print(najlepsza_kolejnosc, Cmax)
-    if X != -1:
-        najlepsza_kolejnosc.remove(X)
-        #print("po usunieciu",najlepsza_kolejnosc)
-        permutacje = tworzenie_permutacji(X, najlepsza_kolejnosc)
-        najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
-        #print("po zmianach", najlepsza_kolejnosc, Cmax)
+    sciezka, graf1, obciazenie = utworz_graf(najlepsza_kolejnosc, ilosc, tabela)
+    #obciazenie2 = utworz_graf2(najlepsza_kolejnosc, ilosc, tabela)
+
+
 
 duration = time.time_ns() / (10**9) - start
 x.add_row([najlepsza_kolejnosc, Cmax, duration])
