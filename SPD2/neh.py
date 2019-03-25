@@ -3,6 +3,7 @@ import math
 import time
 from prettytable import PrettyTable
 
+
 # odczyt z pliku
 
 
@@ -13,6 +14,7 @@ def odczyt(nazwa):
         theFloats.append(float(val))
     theFile.close()
     return theFloats
+
 
 # segregowanie danych do pozniejszego wykorzystania w algorytmie
 
@@ -25,15 +27,17 @@ def przygotowanie_danych(nazwa):
     for a in range(2, len(Wartosci), ilosc):
         tabela_pomocnicza = []
         for b in range(0, ilosc):
-            tabela_pomocnicza = tabela_pomocnicza+[Wartosci[a+b]]
+            tabela_pomocnicza = tabela_pomocnicza + [Wartosci[a + b]]
         tabela.append(tabela_pomocnicza)
     return tabela, n, ilosc
+
 
 # funkcja kluczujaca do sortowania tabeli
 
 
 def sortSecond(val):
     return val[1]
+
 
 # funkcja wyliczajaca Cmax poszczegolnych procesow i sortujaca Cmax malejaco, zwraca kolejnosc wykonywania operacji algorytmu neh
 
@@ -54,16 +58,18 @@ def sortowanie_tabeli(n, ilosc, tabela):
         kolejnosc.append(i[0])
     return kolejnosc
 
+
 # funkcja tworzaca permutacje do przegladu
 
 
 def tworzenie_permutacji(wartosc, lista):
     permutacje = []
-    for i in range(len(lista)+1):
+    for i in range(len(lista) + 1):
         lista.insert(i, wartosc)
         permutacje.append(lista.copy())
         lista.pop(i)
     return permutacje
+
 
 # funkcja wyliczajaca Cmax , zwraca kolejnosc z najkrotszym czasem i ten czas
 
@@ -71,17 +77,18 @@ def tworzenie_permutacji(wartosc, lista):
 def przeglad_zupelny(kolejnosc, ilosc, tabela):
     Cmax = []
     for permutacja in permutacje:
-        m = [0]*ilosc
+        m = [0] * ilosc
         for i in permutacja:
             for j in range(0, ilosc):
                 if j == 0:
                     m[j] += tabela[i][j]
                 else:
-                    m[j] = max(m[j], m[j-1])+tabela[i][j]
+                    m[j] = max(m[j], m[j - 1]) + tabela[i][j]
         Cmax.append(max(m))
     n = Cmax.index(min(Cmax))
     najlepsza = kolejnosc[n]
     return najlepsza, min(Cmax)
+
 
 # nie uzywana jesli uwazasz ze mozna to ja wywal
 
@@ -93,7 +100,7 @@ def wypisanie_wynikow(Cmax, permutacje):
         print(
             f"Dla kolejnosci {i} otrzymano czas na maszynach: {Cmax[j]}")
         j += 1
-    print("-"*100)
+    print("-" * 100)
     print(
         f"Dla kolejnosci {permutacje[a]} otrzymano optymalny czas na maszynach: {min(Cmax)}")
 
@@ -101,17 +108,16 @@ def wypisanie_wynikow(Cmax, permutacje):
 # GLOWNY KOD
 
 x = PrettyTable()
-x.field_names = ["NEH", "Permutacja", "Cmax", "Czas wykonywania"]
+x.field_names = ["NEH", "Cmax", "Czas wykonywania"]
 
-for a in range(5, 30):
-    najlepsza_kolejnosc = []
-    start = time.clock()
-    plik = "SPD1\\data\\"+str(a)+"data.txt"
-    tabela, n, ilosc = przygotowanie_danych(plik)
-    kolejnosc = sortowanie_tabeli(n, ilosc, tabela)
-    for i in kolejnosc:
-        permutacje = tworzenie_permutacji(i, najlepsza_kolejnosc)
-        najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
-    duration = time.clock() - start
-    x.add_row([a, najlepsza_kolejnosc, Cmax, duration])
+najlepsza_kolejnosc = []
+plik = "data.txt"
+tabela, n, ilosc = przygotowanie_danych(plik)
+start = time.time_ns() / (10 ** 9)
+kolejnosc = sortowanie_tabeli(n, ilosc, tabela)
+for i in kolejnosc:
+    permutacje = tworzenie_permutacji(i, najlepsza_kolejnosc)
+    najlepsza_kolejnosc, Cmax = przeglad_zupelny(permutacje, ilosc, tabela)
+duration = time.time_ns() / (10 ** 9) - start
+x.add_row(["-", Cmax, duration])
 print(x)

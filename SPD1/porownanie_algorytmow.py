@@ -1,5 +1,4 @@
 import itertools
-import math
 import time
 from prettytable import PrettyTable
 
@@ -16,14 +15,14 @@ def odczyt(nazwa):
 
 
 def przygotowanie_danych(nazwa):
-    Wartosci = odczyt(nazwa)
+    wartosci = odczyt(nazwa)
     tabela = []
-    n = int(Wartosci[0])
-    ilosc = int(Wartosci[1])
-    for a in range(2, len(Wartosci), ilosc):
+    n = int(wartosci[0])
+    ilosc = int(wartosci[1])
+    for a in range(2, len(wartosci), ilosc):
         tabela_pomocnicza = []
         for b in range(0, ilosc):
-            tabela_pomocnicza = tabela_pomocnicza+[Wartosci[a+b]]
+            tabela_pomocnicza = tabela_pomocnicza+[wartosci[a+b]]
         tabela.append(tabela_pomocnicza)
     return tabela, n, ilosc
 
@@ -115,7 +114,7 @@ for i in range(5, 10):
 
     x.field_names = ["Algorytm Johnsona",
                      "Permutacja", "Czas wykonania", "Cmax"]
-    plik = "SPD1\\data\\"+str(i)+"data.txt"
+    plik = "3maszyny.txt"
     start = time.time_ns() / (10**9)
     tabela, n, ilosc = przygotowanie_danych(plik)
     if ilosc == 3:

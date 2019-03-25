@@ -97,9 +97,9 @@ def reduce_machines(table):
 x = PrettyTable()
 x.field_names = ["Algorytm Johnsona",
                  "Permutacja", "Cmax", "Czas wykonania"]
-for i in range(5, 30):
+for i in range(5, 41):
 
-    plik = "SPD1\\data\\"+str(i)+"data.txt"
+    plik = "data\\"+str(i)+"data.txt"
     start = time.clock()
     tabela, n, ilosc = przygotowanie_danych(plik)
     if ilosc == 3:
