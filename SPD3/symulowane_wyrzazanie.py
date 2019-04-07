@@ -91,7 +91,7 @@ def decyzja(cmax_przed, cmax_po, rozwiazanie_po, rozwiazanie_przed):
 # alternatywna funkcja decyzyjna, nie dajemy 1 dla lepszych rozwiazan
 def decyzja_mod(cmax_przed, cmax_po,  rozwiazanie_po, rozwiazanie_przed):
 
-    p = math.exp((cmax_po-cmax_przed)/Temperatura)
+    p = math.exp((cmax_przed-cmax_po)/Temperatura)
     prand = random.random()
     if p >= prand:
         return rozwiazanie_po, cmax_po
@@ -127,7 +127,7 @@ def tabela_latex(tabela_cmax, tabela_sr):
 
 
 # przygotowanie danych
-plik = "SPD3\\data.txt"
+plik = "data.txt"
 tabela, n, maszyny = przygotowanie_danych(plik)
 
 
@@ -136,27 +136,27 @@ tabela_cmax = [[0, 0], [0, 0], [0, 0], [0, 0], [
     0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [
     0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [
     0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
-Rozwiazanie_poczatkowe, Temperatura, Wspolczynnik_schladzania = inicjalizacja(
-    n, 20000, 0.9)
-for a in range(0, 2):
 
+for a in range(0, 2):
+    if a == 0:
+        Rozwiazanie_poczatkowe, Temperatura, Wspolczynnik_schladzania = inicjalizacja(
+            n, 20000, 0.80)
+    if a == 1:
+        Temperatura = 20000
+        Wspolczynnik_schladzania = 0.80
+        Rozwiazanie_poczatkowe = [2, 8, 13, 16, 6, 10, 1, 14, 4, 11, 9, 19, 0, 12, 5, 18, 15, 3, 17, 7]
     for i in range(0, 30):
         k = 0
         Rozwiazanie_przed = copy.deepcopy(Rozwiazanie_poczatkowe)
         Cmax = obliczenie_Cmax(Rozwiazanie_poczatkowe)
         # głowna petla programu
-        Temperatura = 20000
-        kmax = 50000  # maksymalna ilosc iteracji
+        Temperatura = 200
+        kmax = 500  # maksymalna ilosc iteracji
         TemperaturaMin = 1  # minimalna temperatura
         for k in range(0, kmax):  # kryterium stopu - liczba iteracji
             if Temperatura >= 1:  # kryterium stopu - temperatura graniczna
-                if a == 0:
-                    Rozwiazanie_po = generowanie_ruchu_insert(
-                        Rozwiazanie_przed)
-                if a == 1:
-                    Rozwiazanie_po = generowanie_ruchu_swap(Rozwiazanie_przed)
+                Rozwiazanie_po = generowanie_ruchu_swap(Rozwiazanie_przed)
                 Cmax_po = obliczenie_Cmax(Rozwiazanie_po)
-
                 # odrucenie rozwiazan z takim samym Cmax (modyfikacja)
                 if Cmax_po != Cmax:
                     Rozwiazanie_po_decyzji, Cmax = decyzja(
