@@ -115,63 +115,54 @@ def schladzanie2(temp, k, kmax):
 def tabela_latex(tabela_cmax, tabela_sr):
     print('\\begin{tabular}{l|l|c|c}')
 
-    print('Insert & Cmax &Swap & Cmax \\\\ \\hline')
+    print('Wyrzazanie & Cmax & NEH & Cmax \\\\ \\hline')
     for i in tabela_cmax:
         print(
-            f"--- & {i[0]} & --- & {i[1]}\\\\")
+            f"--- & {i} & --- & {CmaxNEH}\\\\")
     print('\\hline')
     print(
-        f"--- & {tabela_sr[0]} & --- & {tabela_sr[1]}\\\\")
+        f"--- & {tabela_sr} & --- & {CmaxNEH}\\\\")
     print('\\hline\\hline')
     print('\\end{tabular}')
 
 
 # przygotowanie danych
-plik = "data.txt"
+plik = "SPD3\\data.txt"
 tabela, n, maszyny = przygotowanie_danych(plik)
 
 
 # inicjalizacja algorytmu
-tabela_cmax = [[0, 0], [0, 0], [0, 0], [0, 0], [
-    0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [
-    0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [
-    0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+tabela_cmax = []
+Temperatura = 100
+Wspolczynnik_schladzania = 0.99
+Rozwiazanie_poczatkowe = [15, 225, 133, 43, 308, 11, 315, 136, 271, 244, 338, 405, 229, 261, 170, 149, 484, 108, 411, 105, 376, 395, 46, 245, 224, 286, 157, 446, 282, 485, 375, 359, 345, 452, 186, 305, 218, 435, 273, 110, 374, 243, 154, 249, 200, 113, 276, 414, 248, 147, 388, 167, 385, 365, 362, 55, 255, 42, 129, 24, 84, 3, 188, 409, 135, 486, 380, 331, 250, 310, 12, 389, 121, 277, 95, 377, 438, 203, 151, 393, 47, 44, 10, 126, 303, 481, 265, 364, 320, 28, 454, 73, 54, 220, 387, 307, 130, 115, 312, 30, 322, 169, 319, 437, 5, 141, 415, 433, 112, 464, 226, 445, 406, 237, 191, 187, 65, 379, 180, 212, 373, 193, 332, 232, 316, 453, 32, 174, 394, 210, 38, 287, 213, 124, 53, 290, 90, 422, 134, 190, 0, 21, 269, 219, 378, 214, 496, 171, 404, 80, 450, 27, 67, 391, 18, 127, 246, 398, 175, 296, 451, 9, 333, 142, 334, 313, 494, 66, 403, 421, 489, 295, 278, 4, 289, 34, 176, 469, 251, 236, 407, 222, 324, 216, 1, 74, 420, 473, 58, 241, 165, 465, 45, 201, 340, 128, 89, 41, 196, 140, 62, 107, 217, 293, 75, 372, 7, 91, 182, 152, 37, 148, 206, 462, 336, 270, 301, 51, 197, 76, 252, 361, 59, 284, 381, 330, 275, 194, 424, 164, 363, 272, 327, 339, 150, 457, 400, 488, 497, 288, 153, 35, 56, 29, 168, 300, 298, 482,
+                          498, 235, 146, 397, 352, 425, 48, 474, 204, 264, 426, 370, 483, 408, 20, 390, 199, 36, 64, 88, 399, 460, 434, 297, 346, 448, 192, 268, 87, 137, 97, 357, 231, 63, 118, 184, 480, 19, 353, 233, 444, 342, 96, 69, 161, 173, 280, 162, 427, 384, 358, 306, 382, 160, 468, 6, 242, 493, 294, 215, 318, 470, 447, 274, 449, 443, 266, 131, 234, 26, 116, 22, 81, 103, 431, 109, 119, 429, 285, 442, 317, 79, 323, 279, 335, 329, 499, 253, 82, 16, 479, 17, 156, 172, 132, 122, 100, 155, 57, 328, 92, 383, 299, 402, 344, 195, 366, 477, 179, 292, 101, 343, 208, 159, 492, 354, 490, 123, 178, 77, 163, 144, 417, 230, 198, 125, 281, 355, 223, 78, 348, 8, 202, 302, 94, 227, 93, 491, 98, 456, 349, 466, 158, 392, 177, 347, 40, 99, 71, 371, 139, 33, 52, 259, 441, 117, 267, 418, 423, 221, 258, 487, 60, 257, 50, 238, 416, 360, 39, 455, 138, 209, 495, 86, 304, 367, 471, 143, 262, 72, 321, 205, 368, 189, 85, 463, 254, 283, 102, 419, 311, 239, 467, 428, 439, 31, 401, 2, 314, 183, 351, 247, 256, 410, 461, 120, 68, 263, 472, 13, 291, 211, 476, 185, 396, 458, 70, 356, 325, 166, 475, 309, 23, 436, 430, 260, 413, 111, 61, 337, 181, 326, 440, 341, 49, 114, 412, 350, 106, 145, 369, 104, 432, 478, 83, 207, 25, 228, 14, 240, 459, 386]
+CmaxNEH = obliczenie_Cmax(Rozwiazanie_poczatkowe)
+for i in range(0, 30):
+    k = 0
+    Rozwiazanie_przed = copy.deepcopy(Rozwiazanie_poczatkowe)
+    Cmax = obliczenie_Cmax(Rozwiazanie_poczatkowe)
+    # głowna petla programu
+    Temperatura = 100
+    kmax = 5000  # maksymalna ilosc iteracji
+    TemperaturaMin = 1  # minimalna temperatura
+    for k in range(0, kmax):  # kryterium stopu - liczba iteracji
+        if Temperatura >= 1:  # kryterium stopu - temperatura graniczna
+            Rozwiazanie_po = generowanie_ruchu_swap(Rozwiazanie_przed)
+            Cmax_po = obliczenie_Cmax(Rozwiazanie_po)
+            # odrucenie rozwiazan z takim samym Cmax (modyfikacja)
+            if Cmax_po != Cmax:
+                Rozwiazanie_po_decyzji, Cmax = decyzja(
+                    Cmax, Cmax_po, Rozwiazanie_po, Rozwiazanie_przed)
+                Temperatura = schladzanie(Temperatura)
+                Rozwiazanie_przed = Rozwiazanie_po_decyzji
+        else:
+            break
 
-for a in range(0, 2):
-    if a == 0:
-        Rozwiazanie_poczatkowe, Temperatura, Wspolczynnik_schladzania = inicjalizacja(
-            n, 20000, 0.80)
-    if a == 1:
-        Temperatura = 20000
-        Wspolczynnik_schladzania = 0.80
-        Rozwiazanie_poczatkowe = [2, 8, 13, 16, 6, 10, 1, 14, 4, 11, 9, 19, 0, 12, 5, 18, 15, 3, 17, 7]
-    for i in range(0, 30):
-        k = 0
-        Rozwiazanie_przed = copy.deepcopy(Rozwiazanie_poczatkowe)
-        Cmax = obliczenie_Cmax(Rozwiazanie_poczatkowe)
-        # głowna petla programu
-        Temperatura = 200
-        kmax = 500  # maksymalna ilosc iteracji
-        TemperaturaMin = 1  # minimalna temperatura
-        for k in range(0, kmax):  # kryterium stopu - liczba iteracji
-            if Temperatura >= 1:  # kryterium stopu - temperatura graniczna
-                Rozwiazanie_po = generowanie_ruchu_swap(Rozwiazanie_przed)
-                Cmax_po = obliczenie_Cmax(Rozwiazanie_po)
-                # odrucenie rozwiazan z takim samym Cmax (modyfikacja)
-                if Cmax_po != Cmax:
-                    Rozwiazanie_po_decyzji, Cmax = decyzja(
-                        Cmax, Cmax_po, Rozwiazanie_po, Rozwiazanie_przed)
-                    Temperatura = schladzanie(Temperatura)
-                    Rozwiazanie_przed = Rozwiazanie_po_decyzji
-            else:
-                break
-        tabela_cmax[i][a] = Cmax
-tabela_sr = [0, 0]
-for a in range(0, 2):
-    for i in range(0, 30):
-        tabela_sr[a] += tabela_cmax[i][a]
+    tabela_cmax.append(Cmax)
+tabela_sr = 0
+for i in range(0, 30):
+    tabela_sr += tabela_cmax[i]
 
-
-for i in range(0, 2):
-    tabela_sr[i] = tabela_sr[i]/30
+tabela_sr /= 30
 tabela_latex(tabela_cmax, tabela_sr)
