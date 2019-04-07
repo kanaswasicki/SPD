@@ -1,6 +1,8 @@
 import random
 import math
 import copy
+
+
 def odczyt(nazwa):
     theFile = open(nazwa, "r")
     theFloats = []
@@ -32,16 +34,20 @@ def przygotowanie_danych(nazwa):
             tabela_pomocnicza = tabela_pomocnicza + [Wartosci[a + b]]
         tabela.append(tabela_pomocnicza)
     return tabela, n, ilosc
+
+
 """
 
 Od tego miejsca zaczynają sie przydatne funkcje
 
 """
 # inicjalizacja 1. rozwiazania ale tez ustawienie parametrów
-def inicjalizacja(ilosc_zadan, temperatura, wspolczynnik):
+
+
+def inicjalizacja(ilosc_zadan, temperatura, Wspolczynnik_schladzania):
     lista = list(range(0, ilosc_zadan))
     random.shuffle(lista)
-    return lista, temperatura, wspolczynnik
+    return lista, temperatura, Wspolczynnik_schladzania
 
 
 # tworzenie ruchu typu swap
@@ -53,6 +59,8 @@ def generowanie_ruchu_swap(rozwiazanie):
     return rozwiazanie_swap
 
 # tworzenie ruchu typu insert
+
+
 def generowanie_ruchu_insert(rozwiazanie):
     pozycja_do_przestawienia = random.sample(range(len(rozwiazanie)), k=1)
     wylosowane_zadanie = rozwiazanie[pozycja_do_przestawienia[0]]
@@ -71,8 +79,8 @@ def generowanie_ruchu_insert(rozwiazanie):
 def decyzja(cmax_przed, cmax_po, rozwiazanie_po, rozwiazanie_przed):
     if cmax_po < cmax_przed:
         return rozwiazanie_po, cmax_po
-    else: #rozpisane tak dokładnie aby istniala mozliwosc sledzenia wartosci prawdopodobienstwa w debuggerze
-        p = math.exp((cmax_po-cmax_przed)/Temperatura)
+    else:  # rozpisane tak dokładnie aby istniala mozliwosc sledzenia wartosci prawdopodobienstwa w debuggerze
+        p = math.exp((cmax_przed-cmax_po)/Temperatura)
         prand = random.random()
         if p >= prand:
             return rozwiazanie_po, cmax_po
@@ -104,140 +112,66 @@ def schladzanie2(temp, k, kmax):
     return temp
 
 
+def tabela_latex(tabela_cmax, tabela_sr):
+    print('\\begin{tabular}{l|l|c|c}')
 
-'''
-wersja podstawowa:
-    inicjalizacja
-    for
-        generwoanie ruchu swap
-        obliczenie cmax
-        decyzja
-        schladzanie
-        
-modyfikacja 1:
-    wybranie najlepszego naszego algorytmu i porownanie z neh
-    (zrobic na koniec, gdy dobierzemy parametry)
+    print('Insert & Cmax &Swap & Cmax \\\\ \\hline')
+    for i in tabela_cmax:
+        print(
+            f"--- & {i[0]} & --- & {i[1]}\\\\")
+    print('\\hline')
+    print(
+        f"--- & {tabela_sr[0]} & --- & {tabela_sr[1]}\\\\")
+    print('\\hline\\hline')
+    print('\\end{tabular}')
 
-modyfikacja 2:
-    inicjalizacja
-    for
-        generwoanie ruchu swap / insert - porownanie
-        obliczenie cmax
-        decyzja
-        schladzanie
-    
-modyfikacja 3:
-    inicjalizacja -zmiana parametru schladzania i porowanie
-    for
-        generwoanie ruchu swap 
-        obliczenie cmax
-        decyzja
-        schladzanie
-        
-modyfikacja 4:
-dobor temperatur LUB inny sposob schladzania 
-    inicjalizacja -zmiana temp poczatkowej
-    for (zmiana temp koncowej)
-        generwoanie ruchu swap 
-        obliczenie cmax
-        decyzja
-        schladzanie/schladzanie2 -porownac
-        
-modyfikacja 5:
-    inicjalizacja
-    for 
-        generwoanie ruchu swap 
-        obliczenie cmax
-        decyzja_mod
-        schladzanie
-        
-modyfikacja 6:
 
-    inicjalizacja
-    for (z odrzucaniem takich samych Cmax i bez, porownac. Wersja bez jest na koncu kodu, zakomentowana)
-        generwoanie ruchu swap 
-        obliczenie cmax
-        decyzja_mod
-        schladzanie
-
-modyfikacja 7:
-    inicjalizacja vs inicjalizacja + Rozwiazanie_poczatkowe = NEH
-    for 
-        generwoanie ruchu swap 
-        obliczenie cmax
-        decyzja_mod
-        schladzanie
-
-modyfikacja 8:
-    Jeszcze nie mam pomysłu
-    
-    DODATKOWO DO WSZYSTKICH MODYFIKACJI MOZNA UZYWAC INNYCH FUNKCJI (NP INSERT ZAMIAST SWAP, WAZNE ZEBY POROWNUJAC ZMIENAC TYLKO JEDEN ELEMENT)
-    NA KONIEC STWORZYC NAJELPSZE ROZWIAZANIE I WYKONAC MODYFIKACJE 1.
-'''
-## przygotowanie danych
-plik = "data.txt"
+# przygotowanie danych
+plik = "SPD3\\data.txt"
 tabela, n, maszyny = przygotowanie_danych(plik)
 
 
-## inicjalizacja algorytmu
-Rozwiazanie_poczatkowe, Temperatura, Wspolczynnik_schladzania = inicjalizacja(n, 20000, 0.9)
-Cmax = obliczenie_Cmax(Rozwiazanie_poczatkowe)
-Rozwiazanie_przed = Rozwiazanie_poczatkowe
+# inicjalizacja algorytmu
+tabela_cmax = [[0, 0], [0, 0], [0, 0], [0, 0], [
+    0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [
+    0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [
+    0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+Rozwiazanie_poczatkowe, Temperatura, Wspolczynnik_schladzania = inicjalizacja(
+    n, 20000, 0.9)
+for a in range(0, 2):
 
-# głowna petla programu
-kmax = 50000;           #maksymalna ilosc iteracji
-TemperaturaMin = 1      #minimalna temperatura
-for k in range(0, kmax): #kryterium stopu - liczba iteracji
-    if Temperatura >= 1: #kryterium stopu - temperatura graniczna
-        Rozwiazanie_po = generowanie_ruchu_insert(Rozwiazanie_przed)
-        Cmax_po = obliczenie_Cmax(Rozwiazanie_po)
+    for i in range(0, 30):
+        k = 0
+        Rozwiazanie_przed = copy.deepcopy(Rozwiazanie_poczatkowe)
+        Cmax = obliczenie_Cmax(Rozwiazanie_poczatkowe)
+        # głowna petla programu
+        Temperatura = 20000
+        kmax = 50000  # maksymalna ilosc iteracji
+        TemperaturaMin = 1  # minimalna temperatura
+        for k in range(0, kmax):  # kryterium stopu - liczba iteracji
+            if Temperatura >= 1:  # kryterium stopu - temperatura graniczna
+                if a == 0:
+                    Rozwiazanie_po = generowanie_ruchu_insert(
+                        Rozwiazanie_przed)
+                if a == 1:
+                    Rozwiazanie_po = generowanie_ruchu_swap(Rozwiazanie_przed)
+                Cmax_po = obliczenie_Cmax(Rozwiazanie_po)
 
-        if Cmax_po != Cmax: # odrucenie rozwiazan z takim samym Cmax (modyfikacja)
-            Rozwiazanie_po_decyzji, Cmax = decyzja(Cmax, Cmax_po, Rozwiazanie_po, Rozwiazanie_przed)
-            Temperatura = schladzanie(Temperatura)
-            Rozwiazanie_przed = Rozwiazanie_po_decyzji
-    else:
-        break
-Rozwiazanie_koncowe = Rozwiazanie_przed
-print(Rozwiazanie_koncowe, Cmax, Temperatura)
-
-""" to samo co powyzej ale wersja bez odrzucania rozwiazan z takim samym cmax (bez modyfikacji)
-kmax = 50000;
-for k in range(0, kmax): #kryterium stopu - liczba iteracji
-    if Temperatura >= 1: #kryterium stopu - temperatura graniczna
-        Rozwiazanie_po = generowanie_ruchu_insert(Rozwiazanie_przed)
-        Cmax_po = obliczenie_Cmax(Rozwiazanie_po)
-        Rozwiazanie_po_decyzji, Cmax = decyzja(Cmax, Cmax_po, Rozwiazanie_po, Rozwiazanie_przed)
-        Temperatura = schladzanie(Temperatura)
-        Rozwiazanie_przed = Rozwiazanie_po_decyzji
-    else:
-        break
-Rozwiazanie_koncowe = Rozwiazanie_przed
-print(Rozwiazanie_koncowe, Cmax, Temperatura)
-"""
-
+                # odrucenie rozwiazan z takim samym Cmax (modyfikacja)
+                if Cmax_po != Cmax:
+                    Rozwiazanie_po_decyzji, Cmax = decyzja(
+                        Cmax, Cmax_po, Rozwiazanie_po, Rozwiazanie_przed)
+                    Temperatura = schladzanie(Temperatura)
+                    Rozwiazanie_przed = Rozwiazanie_po_decyzji
+            else:
+                break
+        tabela_cmax[i][a] = Cmax
+tabela_sr = [0, 0]
+for a in range(0, 2):
+    for i in range(0, 30):
+        tabela_sr[a] += tabela_cmax[i][a]
 
 
-"""
-#### rozwiazanie dla kryterium stopu - temperatura graniczna####
-temperatura_graniczna = 1;
-while temperatura >= temperatura_graniczna:
-    rozwiazanie_po = generowanie_ruchu_swap(rozwiazanie_przed)
-    rozwiazanie_po_decyzji = decyzja(Cmax, rozwiazanie_po)
-    temperatura = schladzanie(temperatura)
-    rozwiazanie_przed = rozwiazanie_po_decyzji
-rozwiazanie_koncowe = rozwiazanie_przed
-print(rozwiazanie_koncowe, Cmax)
-"""
-
-"""
-#### rozwiazanie dla kryterium stopu - liczba iteracji####
-temperatura_graniczna = 1;
-for k in range(0, kmax):
-    rozwiazanie_po = generowanie_ruchu_swap(rozwiazanie_przed)
-    rozwiazanie_po_decyzji = decyzja(Cmax, rozwiazanie_po)
-    temperatura = schladzanie(temperatura)
-    rozwiazanie_przed = rozwiazanie_po_decyzji
-rozwiazanie_koncowe = rozwiazanie_przed
-print(rozwiazanie_koncowe, Cmax)
-"""
+for i in range(0, 2):
+    tabela_sr[i] = tabela_sr[i]/30
+tabela_latex(tabela_cmax, tabela_sr)
