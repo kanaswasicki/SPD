@@ -81,11 +81,17 @@ def schragepmtn(N):
 
 
 a = []
+b = []
+c = [[1513.0, 3076.0, 6416.0], [1492.0, 3070.0, 6398.0]]
 instancje = [50, 100, 200]
 for i in instancje:
     plik = "SPD4\\in" + str(i)+".txt"
     tabela = przygotowanie_danych(plik)
-    kolejnosc, Cmax = schragepmtn(tabela)
+
+    kolejnosc, Cmax = schrage(tabela)
     a.append(Cmax)
-    print(Cmax)
-print(sum(a))
+    kolejnosc, Cmax = schragepmtn(tabela)
+    b.append(Cmax)
+
+print(a, sum(a), b, sum(b))
+print(c[0], sum(c[0]), c[1], sum(c[1]))
