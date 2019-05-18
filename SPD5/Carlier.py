@@ -117,12 +117,13 @@ def licz_c(n, tabela, a, b):
     else:
         return []
 
-
-def Carlier(n, tabela, UB, previousLB, wejscie):
+# wszystko teraz pracuje na zmiennych globalnych, zmieniłem sposob liczenia K
+# wyswietla sie tez poziom i kierunek
+def Carlier(n, tabela,wejscie, poziom):
+    global best_pi
+    global UB
     pi, U = schrage(tabela)
-    print(wejscie)
-    UBL = 9999999999
-    UBP = 9999999999
+    print(wejscie, poziom, "\n")
     if U < UB:
         UB = U
         best_pi = pi
@@ -132,9 +133,7 @@ def Carlier(n, tabela, UB, previousLB, wejscie):
     if c == []:
         return UB, tabela
     K = []
-    # tutaj skonczylem poprawiac
-    # a,b,c to zadania odpowiednio min max i krytyczne na sciezce
-    for i in range(c+1, b+1):
+    for i in pi[pi.index(c)+1:pi.index(b)+1]:
         K.append(i)
     rK = []
     qK = []
@@ -155,7 +154,7 @@ def Carlier(n, tabela, UB, previousLB, wejscie):
     hkc = min(rK, tabela[c][0])+pK+tabela[c][1]+min(qK, tabela[c][2])
     LB = max(hK, LB, hkc)
     if LB < UB:
-        UB, best_pi = Carlier(best_pi, tabela, UB, LB, 0)
+        Carlier(best_pi, tabela, 'lewo',poziom+1)
     tabela[c][0] = tempR
 
     # PRAWA
@@ -167,13 +166,15 @@ def Carlier(n, tabela, UB, previousLB, wejscie):
     LB = schragepmtn(tabela)
     LB = max(hK, hkc, LB)
     if LB < UB:
-        UB, best_pi = Carlier(best_pi, tabela, UB, LB, 1)
+        Carlier(best_pi, tabela, 'prawo', poziom+1)
     tabela[c][2] = tempQ
 
-    return UB, best_pi
 
 
-plik = "SPD5\\data.txt"
+plik = "data3.txt"
 tabela, n = przygotowanie_danych(plik)
-Cmax, tabela = Carlier(n, tabela, 99999999, 0, 0)
-print(Cmax, tabela)
+UB = 99999999
+Carlier(n, tabela, 'srodek', 0)
+print(UB, tabela)
+best_pi = [x+1 for x in best_pi]
+print(best_pi)
