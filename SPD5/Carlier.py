@@ -23,7 +23,7 @@ def przygotowanie_danych(nazwa):
         for b in range(0, 3):
             tabela_pomocnicza = tabela_pomocnicza + [Wartosci[a + b]]
         tabela.append(tabela_pomocnicza)
-    return tabela,n
+    return tabela, n
 
 
 def schrage(N):
@@ -44,7 +44,7 @@ def schrage(N):
             i = NG.index(max(NG, key=operator.itemgetter(2)))
             j = NG[i]
             NG.pop(i)
-            teta.append(j)
+            teta.append(N.index(j))
             t = t + j[1]
             Cmax = max(Cmax, t+j[2])
     return teta, Cmax
@@ -78,17 +78,14 @@ def schragepmtn(N):
             l = j
             t = t + j[1]
             Cmax = max(Cmax, t+j[2])
-    return  Cmax
+    return Cmax
 
 
 def licz_b(U, n, tabela):
     p = 0
-    Cmax = 0
-
-    for i in range(0, n):
+    for i in n:
         r = tabela[i][0]
         p = max(p, r) + tabela[i][1]
-
         if U == p + tabela[i][2]:
             j = i
     return j
@@ -96,19 +93,24 @@ def licz_b(U, n, tabela):
 
 def licz_a(U, n, tabela, b):
     q = tabela[b][2]
-    for i in range(0, n):
+    mx = n.index(b)
+    for i in n:
         p = 0
-        for a in range(i, b+1):
-            p += tabela[a][1]
-        if U == tabela[i][0]+p+q:
+        r = tabela[i][0]
+        mi = n.index(i)
+        for a in range(mi, mx+1):
+            p += tabela[n[a]][1]
+        if U == r+p+q:
             return i
 
 
-def licz_c(tabela, a, b):
+def licz_c(n, tabela, a, b):
     flaga = 0
+    a = n.index(a)
+    b = n.index(b)
     for i in range(a, b+1):
-        if tabela[i][2] < tabela[b][2]:
-            j = i
+        if tabela[n[i]][2] < tabela[n[b]][2]:
+            j = n[i]
             flaga = 1
     if flaga == 1:
         return j
@@ -123,13 +125,15 @@ def Carlier(n, tabela, UB, previousLB, wejscie):
     UBP = 9999999999
     if U < UB:
         UB = U
-        tabela = pi
-    b = licz_b(U, n, pi)
-    a = licz_a(U, n, pi, b)
-    c = licz_c(pi, a, b)
+        best_pi = pi
+    b = licz_b(U, pi, tabela)
+    a = licz_a(U, pi, tabela, b)
+    c = licz_c(pi, tabela, a, b)
     if c == []:
         return UB, tabela
     K = []
+    # tutaj skonczylem poprawiac
+    # a,b,c to zadania odpowiednio min max i krytyczne na sciezce
     for i in range(c+1, b+1):
         K.append(i)
     rK = []
@@ -151,7 +155,7 @@ def Carlier(n, tabela, UB, previousLB, wejscie):
     hkc = min(rK, tabela[c][0])+pK+tabela[c][1]+min(qK, tabela[c][2])
     LB = max(hK, LB, hkc)
     if LB < UB:
-        UBL, piL = Carlier(n, tabela, UB, LB, 0)
+        UB, best_pi = Carlier(best_pi, tabela, UB, LB, 0)
     tabela[c][0] = tempR
 
     # PRAWA
@@ -163,19 +167,13 @@ def Carlier(n, tabela, UB, previousLB, wejscie):
     LB = schragepmtn(tabela)
     LB = max(hK, hkc, LB)
     if LB < UB:
-        UBP, piP = Carlier(n, tabela, UB, LB, 1)
+        UB, best_pi = Carlier(best_pi, tabela, UB, LB, 1)
     tabela[c][2] = tempQ
 
-    if UB >= UBL:
-        UB = UBL
-        tabela = piL
-    if UB >= UBP:
-        UB = UBP
-        tabela = piP
-    return UB, tabela
+    return UB, best_pi
 
 
-plik = "data.txt"
+plik = "SPD5\\data.txt"
 tabela, n = przygotowanie_danych(plik)
-Cmax, tabela = Carlier(n,tabela,99999999,0, 0)
+Cmax, tabela = Carlier(n, tabela, 99999999, 0, 0)
 print(Cmax, tabela)
