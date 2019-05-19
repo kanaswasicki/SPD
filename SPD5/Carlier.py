@@ -168,7 +168,7 @@ for i in range(0, 9):
     tabela, n =Schrage.przygotowanie_danych(plik)
     UB = 99999999
     cofniecie = 0
-    Carlier2(n, tabela, 'srodek', 0)
+    Carlier3(n, tabela, 'srodek', 0)
     print(UB, '\n')
     #best_pi = [x+1 for x in best_pi]
     print(best_pi, '\n')
