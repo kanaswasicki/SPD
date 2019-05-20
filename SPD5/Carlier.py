@@ -1,12 +1,13 @@
-
 import copy
 import Schrage
 from prettytable import PrettyTable
 import Carlier_dodatkowe as Cd
-
+import sys
 
 # wszystko teraz pracuje na zmiennych globalnych, zmieniłem sposob liczenia K
 # wyswietla sie tez poziom i kierunek
+
+
 def Carlier3(n, tabela, wejscie, poziom):
     global best_pi
     global UB
@@ -136,25 +137,23 @@ def Carlierdeepleft(tabela, wejscie, poziom):
     qK = min(qK)
     rK = min(rK)
     rpq = [rK, pK, qK]
-    tabela = Cd.eliminacja(L, tabela, UB, rpq, b)
+    LB = Schrage.schragepmtn(tabela)
     # LEWA
     tempR = tabela[c][0]
     tabela[c][0] = max(tabela[c][0], rK+pK)
-    temp = tabela[c]
     hkc = min(rK, tabela[c][0])+pK+tabela[c][1]+min(qK, tabela[c][2])
     LBL = max(sum(rpq), LB, hkc)
     if LBL < UB:
-        Carlier(tabela, 'lewo', poziom+1)
+        Carlierdeepleft(tabela, 'lewo', poziom+1)
     tabela[c][0] = tempR
     # PRAWA
     tempQ = tabela[c][2]
     tabela[c][2] = max(tabela[c][2], qK + pK)
-    temp1 = tabela[c]
     hkc = min(rK, tabela[c][0]) + pK + tabela[c][1] + min(qK, tabela[c][2])
     #LBP = schragepmtn(tabela)
     LBP = max(sum(rpq), hkc, LB)
     if LBP < UB:
-        Carlier(tabela, 'prawo', poziom+1)
+        Carlierdeepleft(tabela, 'prawo', poziom+1)
     tabela[c][2] = tempQ
 
 
@@ -192,21 +191,19 @@ def Carlierdeeplefteliminacja(tabela, wejscie, poziom):
     # LEWA
     tempR = tabela[c][0]
     tabela[c][0] = max(tabela[c][0], rK+pK)
-    temp = tabela[c]
     hkc = min(rK, tabela[c][0])+pK+tabela[c][1]+min(qK, tabela[c][2])
     LBL = max(sum(rpq), LB, hkc)
     if LBL < UB:
-        Carlier(tabela, 'lewo', poziom+1)
+        Carlierdeeplefteliminacja(tabela, 'lewo', poziom+1)
     tabela[c][0] = tempR
     # PRAWA
     tempQ = tabela[c][2]
     tabela[c][2] = max(tabela[c][2], qK + pK)
-    temp1 = tabela[c]
     hkc = min(rK, tabela[c][0]) + pK + tabela[c][1] + min(qK, tabela[c][2])
     #LBP = schragepmtn(tabela)
     LBP = max(sum(rpq), hkc, LB)
     if LBP < UB:
-        Carlier(tabela, 'prawo', poziom+1)
+        Carlierdeeplefteliminacja(tabela, 'prawo', poziom+1)
     tabela[c][2] = tempQ
 
 
@@ -249,7 +246,6 @@ def Carlierwidelefteliminacja():
     # LEWA
     tempR = tabela[c][0]
     tabela[c][0] = max(tabela[c][0], rK+pK)
-    temp = tabela[c]
     hkc = min(rK, tabela[c][0])+pK+tabela[c][1]+min(qK, tabela[c][2])
     LBL = max(sum(rpq), LB, hkc)
     if LBL < UB:
@@ -258,11 +254,9 @@ def Carlierwidelefteliminacja():
     # PRAWA
     tempQ = tabela[c][2]
     tabela[c][2] = max(tabela[c][2], qK + pK)
-    temp1 = tabela[c]
     hkc = min(rK, tabela[c][0]) + pK + tabela[c][1] + min(qK, tabela[c][2])
     #LBP = schragepmtn(tabela)
     LBP = max(sum(rpq), hkc, LB)
-
     if LBP < UB:
         tab_task.append([copy.deepcopy(tabela), 'prawo', task[2]+1])
     tabela[c][2] = tempQ
@@ -272,13 +266,13 @@ def Carlierwidelefteliminacja():
 x = PrettyTable()
 x.field_names = ["Carlier", "Permutacja", "Cmax"]
 tab_task = []
+cofniecie = 0
 for i in range(0, 9):
-    plik = 'SPD5\\data'+str(i)+'.txt'
+    plik = 'data'+str(i)+'.txt'
     tabela, n = Schrage.przygotowanie_danych(plik)
-    tab_task.append([tabela, 'srodek', 0])
     UB = 99999999
     cofniecie = 0
-    Carlierwidelefteliminacja()
+    Carlierdeeplefteliminacja(tabela, 'srodek', 0)
     print(UB, '\n')
     best_pi = [x+1 for x in best_pi]
     print(best_pi, '\n')
