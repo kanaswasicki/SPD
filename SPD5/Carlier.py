@@ -263,6 +263,7 @@ def Carlierwidelefteliminacja():
     Carlierwidelefteliminacja()
 
 
+#main
 x = PrettyTable()
 x.field_names = ["Carlier", "Permutacja", "Cmax"]
 tab_task = []
