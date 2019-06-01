@@ -3,63 +3,64 @@ import collections
 from ortools.sat.python import cp_model
 
 
-def MinimalJobshopSat():
+def Jobshop():
     "Problem job_shop"
     model = cp_model.CpModel()
 
-    jobs_data = [  # task = (machine_id, processing_time).
-        [(0, 3), (1, 2), (2, 2)],  # Job0
-        [(0, 2), (2, 1), (1, 4)],  # Job1
-        [(1, 4), (2, 3)]  # Job2
+    lista_prac = [  # zadanie = (machine_id, processing_time).
+        [(0, 3), (1, 2), (2, 2)],  # praca 0
+        [(0, 2), (2, 1), (1, 4)],  # praca 1
+        [(1, 4), (2, 3)],          # praca 2
+        [(5, 5), (4, 1), (3, 8)]   # praca 3
     ]
 
-    machines_count = 1 + max(task[0] for job in jobs_data for task in job)
-    all_machines = range(machines_count)
+    liczba_maszyn = 1 + max(zadanie[0] for praca in lista_prac for zadanie in praca)
+    zakres_maszyn = range(liczba_maszyn)
 
     #wyliczanie maksymalnej możliwej wartości Cmax poprzez dodawanie wszystkich czasów
-    horizon = sum(task[1] for job in jobs_data for task in job)
+    horyzont = sum(zadanie[1] for praca in lista_prac for zadanie in praca)
 
     # Nazwany tuple do przechowywania wszystkich zadań
-    task_type = collections.namedtuple('task_type', 'start end interval')
+    typ_zadania = collections.namedtuple('typ_zadania', 'poczatek koniec interwal')
     # Nazwany tuple żeby manipulować informacjami rozwiązania (wykorzystane do wyświetlania danych)
-    assigned_task_type = collections.namedtuple('assigned_task_type',
-                                                'start job index duration')
+    typ_zadania_wyswietlanie = collections.namedtuple('typ_zadania_wyswietlanie',
+                                                'poczatek praca index czas_trwania')
 
-    #Wpisanie poszczególnych task'ów do tuple all_task i dodanie do powiązanej listy maszyn
-    all_tasks = {}
-    machine_to_intervals = collections.defaultdict(list)
+    #Wpisanie poszczególnych zadanie'ów do tuple all_zadanie i dodanie do powiązanej listy maszyn
+    wszystkie_zadania = {}
+    lista_zadan_do_maszyny = collections.defaultdict(list)
 
-    for job_id, job in enumerate(jobs_data):
-        for task_id, task in enumerate(job):
-            machine = task[0]
-            duration = task[1]
-            suffix = '_%i_%i' % (job_id, task_id)
-            start_var = model.NewIntVar(0, horizon, 'start' + suffix)
-            end_var = model.NewIntVar(0, horizon, 'end' + suffix)
-            interval_var = model.NewIntervalVar(start_var, duration, end_var,
-                                                'interval' + suffix)
-            all_tasks[job_id, task_id] = task_type(
-                start=start_var, end=end_var, interval=interval_var)
-            machine_to_intervals[machine].append(interval_var)
+    for praca_id, praca in enumerate(lista_prac):
+        for zadanie_id, zadanie in enumerate(praca):
+            maszyna = zadanie[0]
+            czas_trwania = zadanie[1]
+            suffix = '_%i_%i' % (praca_id, zadanie_id)
+            start_var = model.NewIntVar(0, horyzont, 'poczatek' + suffix)
+            end_var = model.NewIntVar(0, horyzont, 'koniec' + suffix)
+            interval_var = model.NewIntervalVar(start_var, czas_trwania, end_var,
+                                                'interwal' + suffix)
+            wszystkie_zadania[praca_id, zadanie_id] = typ_zadania(
+                poczatek=start_var, koniec=end_var, interwal=interval_var)
+            lista_zadan_do_maszyny[maszyna].append(interval_var)
 
     # Dodanie constraina odpowiadającego za to żeby nie było możliwości wykonywania się 2 zadań na jednej maszynie w tym samym czasie
-    for machine in all_machines:
-        model.AddNoOverlap(machine_to_intervals[machine])
+    for maszyna in zakres_maszyn:
+        model.AddNoOverlap(lista_zadan_do_maszyny[maszyna])
 
-    # Dodanie constraina odpowiadajacego za to, żeby nie było możliwości aby zadanie kolejne w ramach jednego job'a zaczęło się szybciej niż poprzednie się skończyło
-    for job_id, job in enumerate(jobs_data):
-        for task_id in range(len(job) - 1):
-            model.Add(all_tasks[job_id, task_id +
-                                1].start >= all_tasks[job_id, task_id].end)
+    # Dodanie constraina odpowiadajacego za to, żeby nie było możliwości aby zadanie kolejne w ramach jednego praca'a zaczęło się szybciej niż poprzednie się skończyło
+    for praca_id, praca in enumerate(lista_prac):
+        for zadanie_id in range(len(praca) - 1):
+            model.Add(wszystkie_zadania[praca_id, zadanie_id +
+                                1].poczatek >= wszystkie_zadania[praca_id, zadanie_id].koniec)
 
-    # zdefiniowanie problem obj_var jest wartościa maksymalna z zakonczonych zadan
-    obj_var = model.NewIntVar(0, horizon, 'makespan')
-    model.AddMaxEquality(obj_var, [
-        all_tasks[job_id, len(job) - 1].end
-        for job_id, job in enumerate(jobs_data)
+    # zdefiniowanie problem Cmax jest wartościa maksymalna z zakonczonych zadan
+    Cmax = model.NewIntVar(0, horyzont, 'makespan')
+    model.AddMaxEquality(Cmax, [
+        wszystkie_zadania[praca_id, len(praca) - 1].koniec
+        for praca_id, praca in enumerate(lista_prac)
     ])
-    # ustawienie constraina na obj_var (finalnego) odpowiadajacego za minimalizacje wartosci Cmax problemu job_shop
-    model.Minimize(obj_var)
+    # ustawienie constraina na Cmax (finalnego) odpowiadajacego za minimalizacje wartosci Cmax problemu job_shop
+    model.Minimize(Cmax)
 
     # wywolanie modelu i rozwiazania
     solver = cp_model.CpSolver()
@@ -67,43 +68,45 @@ def MinimalJobshopSat():
 
     if status == cp_model.OPTIMAL:
         # Stworzenie listy zadan przypisanych do danej maszyny
-        assigned_jobs = collections.defaultdict(list)
-        for job_id, job in enumerate(jobs_data):
-            for task_id, task in enumerate(job):
-                machine = task[0]
-                assigned_jobs[machine].append(
-                    assigned_task_type(
-                        start=solver.Value(all_tasks[job_id, task_id].start),
-                        job=job_id,
-                        index=task_id,
-                        duration=task[1]))
+        przypisane_zadanie = collections.defaultdict(list)
+        for praca_id, praca in enumerate(lista_prac):
+            for zadanie_id, zadanie in enumerate(praca):
+                maszyna = zadanie[0]
+                przypisane_zadanie[maszyna].append(
+                    typ_zadania_wyswietlanie(
+                        poczatek=solver.Value(wszystkie_zadania[praca_id, zadanie_id].poczatek),
+                        praca=praca_id,
+                        index=zadanie_id,
+                        czas_trwania=zadanie[1]))
 
         # Stworzenie linii tekstu dla poszczegolnej maszyny
-        output = ''
-        for machine in all_machines:
+        wyswietlanie = ''
+        for maszyna in zakres_maszyn:
             # Sortowanie po wartosciach poczatkowych
-            assigned_jobs[machine].sort()
-            sol_line_tasks = 'Machine ' + str(machine) + ': '
-            sol_line = '           '
+            przypisane_zadanie[maszyna].sort()
+            wiersz_wykonanych_zadan = 'Maszyna ' + str(maszyna) + ': '
+            wiersz_poczatek_koniec = '           '
 
-            for assigned_task in assigned_jobs[machine]:
-                name = 'job_%i_%i' % (assigned_task.job, assigned_task.index)
-                # dodanie spacji do stringa output zeby wyrownac kolumny
-                sol_line_tasks += '%-10s' % name
+            for zadanie in przypisane_zadanie[maszyna]:
+                nazwa = 'zadanie_%i_%i' % (zadanie.praca, zadanie.index)
+                # dodanie spacji do stringa wyswietlanie zeby wyrownac kolumny
+                wiersz_wykonanych_zadan += '%-20s' % nazwa
 
-                start = assigned_task.start
-                duration = assigned_task.duration
-                sol_tmp = '[%i,%i]' % (start, start + duration)
-                # dodanie spacji do stringa output zeby wyrownac kolumny
-                sol_line += '%-10s' % sol_tmp
+                poczatek = zadanie.poczatek
+                czas_trwania = zadanie.czas_trwania
+                temp_wiersz = '[%i,%i]' % (poczatek, poczatek + czas_trwania)
+                # dodanie spacji do stringa wyswietlanie zeby wyrownac kolumny
+                wiersz_poczatek_koniec += '%-20s' % temp_wiersz
 
-            sol_line += '\n'
-            sol_line_tasks += '\n'
-            output += sol_line_tasks
-            output += sol_line
+            wiersz_poczatek_koniec += '\n'
+            wiersz_wykonanych_zadan += '\n'
+            wyswietlanie += wiersz_wykonanych_zadan
+            wyswietlanie += wiersz_poczatek_koniec
 
         # Printowanie wyniku programu solver metoda CP
         print('Optymalna długość uszeregowania: %i' % solver.ObjectiveValue())
-        print(output)
-MinimalJobshopSat()
+        print(wyswietlanie)
+
+
+Jobshop()
 
