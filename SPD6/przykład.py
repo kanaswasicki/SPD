@@ -1,18 +1,13 @@
 from __future__ import print_function
 import collections
 from ortools.sat.python import cp_model
-
+import wczytywanie_danych
 
 def Jobshop():
     "Problem job_shop"
     model = cp_model.CpModel()
 
-    lista_prac = [  # zadanie = (machine_id, processing_time).
-        [(0, 3), (1, 2), (2, 2)],  # praca 0
-        [(0, 2), (2, 1), (1, 4)],  # praca 1
-        [(1, 4), (2, 3)],          # praca 2
-        [(5, 5), (4, 1), (3, 8)]   # praca 3
-    ]
+    lista_prac = wczytywanie_danych.przygotowanie_danych('data1.txt')
 
     liczba_maszyn = 1 + max(zadanie[0] for praca in lista_prac for zadanie in praca)
     zakres_maszyn = range(liczba_maszyn)
@@ -88,7 +83,7 @@ def Jobshop():
             wiersz_poczatek_koniec = '           '
 
             for zadanie in przypisane_zadanie[maszyna]:
-                nazwa = 'zadanie_%i_%i' % (zadanie.praca, zadanie.index)
+                nazwa = 'zadanie_%i' % (zadanie.praca*4+zadanie.index+1)
                 # dodanie spacji do stringa wyswietlanie zeby wyrownac kolumny
                 wiersz_wykonanych_zadan += '%-20s' % nazwa
 
