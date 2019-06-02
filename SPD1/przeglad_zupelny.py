@@ -1,6 +1,6 @@
 import itertools
-import math
 import time
+
 from prettytable import PrettyTable
 
 
@@ -11,6 +11,7 @@ def odczyt(nazwa):
         theFloats.append(float(val))
     theFile.close()
     return theFloats
+
 
 # segregowanie danych do pozniejszego wykorzystania w algorytmie
 
@@ -23,7 +24,7 @@ def przygotowanie_danych(nazwa):
     for a in range(2, len(Wartosci), ilosc):
         tabela_pomocnicza = []
         for b in range(0, ilosc):
-            tabela_pomocnicza = tabela_pomocnicza+[Wartosci[a+b]]
+            tabela_pomocnicza = tabela_pomocnicza + [Wartosci[a + b]]
         tabela.append(tabela_pomocnicza)
     return tabela, n, ilosc
 
@@ -35,13 +36,13 @@ def przeglad_zupelny(n, ilosc, tabela):
     permutacje = list(itertools.permutations(zakres))
     Cmax = []
     for permutacja in permutacje:
-        m = [0]*ilosc
+        m = [0] * ilosc
         for i in permutacja:
             for j in range(0, ilosc):
                 if j == 0:
                     m[j] += tabela[i][j]
                 else:
-                    m[j] = max(m[j], m[j-1])+tabela[i][j]
+                    m[j] = max(m[j], m[j - 1]) + tabela[i][j]
         Cmax.append(max(m))
     j = 0
     return permutacje, Cmax
@@ -54,7 +55,7 @@ def wypisanie_wynikow(Cmax, permutacje):
         print(
             f"Dla kolejnosci {i} otrzymano czas na maszynach: {Cmax[j]}")
         j += 1
-    print("-"*100)
+    print("-" * 100)
     print(
         f"Dla kolejnosci {permutacje[a]} otrzymano optymalny czas na maszynach: {min(Cmax)}")
 
@@ -62,7 +63,7 @@ def wypisanie_wynikow(Cmax, permutacje):
 x = PrettyTable()
 x.field_names = ["Brute Force", "Permutacja", "Czas wykonania", "Cmax"]
 for i in range(5, 11):
-    plik = "data\\"+str(i)+"data.txt"
+    plik = "data\\" + str(i) + "data.txt"
     start = time.clock()
     tabela, n, ilosc = przygotowanie_danych(plik)
     permutacje, Cmax = przeglad_zupelny(n, ilosc, tabela)

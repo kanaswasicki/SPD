@@ -1,7 +1,5 @@
-import itertools
-import math
-import copy
 import time
+
 from prettytable import PrettyTable
 
 
@@ -170,6 +168,8 @@ def utworz_graf2(Pi, ilosc, tabela):
                 else:
                     obciazenie[-i][-j] = max([obciazenie[-i + 1][-j], obciazenie[-i][-j + 1]]) + graf[-i][-j]
     return obciazenie
+
+
 # Akceleracja polega na tym, że tylko raz musimy przejsc przez cala macierz m x n przy wstawianiu zadania
 # przechodzimy przez macierz wyliczając obciazenie1 i obciazenie2, a sprawdzanie wszystkich uszeregowan dokonujemy na
 # obliczonych macierzach, wyznaczając zawsze tylko jeden dodatkowy wektor dla każdej pozycji
@@ -191,19 +191,19 @@ def utworz_graf2(Pi, ilosc, tabela):
 # Krok ostatni:
 # wybór uszeregowania dla którego Cmax przyjmuje wartosc najmniejsza
 def neh_akceleracja(kolejnosc, obciazenie1, obciazenie2, tabela, element):
-    Cmax = [] # lista 1x(n+1) przygotowana dla Cmax z kazdego uszeregowania
+    Cmax = []  # lista 1x(n+1) przygotowana dla Cmax z kazdego uszeregowania
     for i in range(len(obciazenie2) + 1):
-        #szukając pozycji 4 elementu w uszeregowaniu, musimy rozważyć dla niego 4 pozycje
+        # szukając pozycji 4 elementu w uszeregowaniu, musimy rozważyć dla niego 4 pozycje
         # na poczatku, na koncu i pomiedzy poprzednimi zadaniami
         # ilosc mozliwych pozycji nowego elementu = n + 1, len(obciazenie2) + 1
         # n - ilosc zadan w dodtychczasowym najlepszym uszeregowaniu
         # m - ilosc maszyn
 
-        temp = [] #(rozmiar m) lista tymczasowa, która przechowuje wartosci obciazenia1, gdybyśmy zadanie wstawili w wybrane miejsce
-        C = [] #(rozmiar m)  lista zawierająca obciazenia kazdej ze sciezek w konkretnym uszeregowaniu( slajd 10).
+        temp = []  # (rozmiar m) lista tymczasowa, która przechowuje wartosci obciazenia1, gdybyśmy zadanie wstawili w wybrane miejsce
+        C = []  # (rozmiar m)  lista zawierająca obciazenia kazdej ze sciezek w konkretnym uszeregowaniu( slajd 10).
 
         if i == 0:
-        # rozważenie przypadku wstawiania elementu przed wszystkie poprzednie zadania (na początek uszeregowania)
+            # rozważenie przypadku wstawiania elementu przed wszystkie poprzednie zadania (na początek uszeregowania)
 
             for j in range(len(tabela[element])):
                 # w wybranym uszeregowaniu (tutaj na 0 pozycji i==0) wyznaczamy wage/obciazenie  tego zadana w przypadku gdyby
@@ -211,18 +211,18 @@ def neh_akceleracja(kolejnosc, obciazenie1, obciazenie2, tabela, element):
                 # wyznaczamy obciazenia dla kazdej maszyny wchodzacej w to zadanie i zapisujemy w liscie temp
                 # m = len(tabela[element] - ilosc maszyn
 
-                if j == 0:                 # przypadek rozwazajacy obciazenie 0 maszyny na zerowej pozycji zadania
+                if j == 0:  # przypadek rozwazajacy obciazenie 0 maszyny na zerowej pozycji zadania
 
-                    temp.append(tabela[element][j])             # dodawanie wyliczonego obciazenia maszyny w zadaniu do listy
-                else:                               # przypadek rozwazajacy obciazenie pozostałych maszyn na 0 pozycji zadania
-                    temp.append(tabela[element][j] + temp[j - 1])# dodawanie wyliczonego obciazenia maszyny w zadaniu do listy
+                    temp.append(tabela[element][j])  # dodawanie wyliczonego obciazenia maszyny w zadaniu do listy
+                else:  # przypadek rozwazajacy obciazenie pozostałych maszyn na 0 pozycji zadania
+                    temp.append(tabela[element][j] + temp[j - 1])  # dodawanie wyliczonego obciazenia maszyny w zadaniu do listy
 
-                C.append(temp[j] + obciazenie2[i][j])   # zsumowane wyliczone obciązenie 'prawostronne' maszyny j w uszeregowaniu na pozycji i
+                C.append(temp[j] + obciazenie2[i][j])  # zsumowane wyliczone obciązenie 'prawostronne' maszyny j w uszeregowaniu na pozycji i
                 #                                                         # z obciazeniem lewostronnym zadania które w tym uszeregowaniu wystepowałoby po nim
-            Cmax.append(max(C))    # Cmax tego uszeregowania wyznaczany jako max(C), ponieważ musimy wybrać sciezke krytyczna (slajd 10)
+            Cmax.append(max(C))  # Cmax tego uszeregowania wyznaczany jako max(C), ponieważ musimy wybrać sciezke krytyczna (slajd 10)
 
         elif i == len(obciazenie2):
-        # rozważenie przypadku wstawiania elementu za wszystkie zadania ( na koniec)
+            # rozważenie przypadku wstawiania elementu za wszystkie zadania ( na koniec)
 
             for j in range(len(tabela[element])):
                 # w wybranym uszeregowaniu (tutaj na ostatniej pozycji pozycji len(obciazenie2)) wyznaczamy wage/obciazenie  tego zadana w przypadku gdyby
@@ -230,7 +230,7 @@ def neh_akceleracja(kolejnosc, obciazenie1, obciazenie2, tabela, element):
                 # wyznaczamy obciazenia dla kazdej maszyny wchodzacej w to zadanie i zapisujemy w liscie temp
                 # m = len(tabela[element] - ilosc maszyn
 
-                if j == 0:# przypadek rozwazajacy obciazenie 0 maszyny na ostatniej  pozycji zadania
+                if j == 0:  # przypadek rozwazajacy obciazenie 0 maszyny na ostatniej  pozycji zadania
 
                     temp.append(tabela[element][j] + obciazenie1[i - 1][j])
                     # dodawanie wyliczonego obciazenia maszyny w zadaniu do listy
@@ -240,11 +240,11 @@ def neh_akceleracja(kolejnosc, obciazenie1, obciazenie2, tabela, element):
                     temp.append(tabela[element][j] + max(obciazenie1[i - 1][j], temp[j - 1]))
                     # obciazenie prawostronne w tym uszeregowaniu dla maszyny j w pozycji zadania i(na koncu) liczymy
                     # dodajac do czasu pracy na maszynie j obciazenie1 z maszyny i-1
-                C.append(temp[j])# wyliczone obciązenie 'prawostronne' maszyny j dodajemy do listy C. Zadanie rozpartrujemy na ostatniej pozycji
-                                 # wiec nie dodajemy zadania wystepujacego po nim
+                C.append(temp[j])  # wyliczone obciązenie 'prawostronne' maszyny j dodajemy do listy C. Zadanie rozpartrujemy na ostatniej pozycji
+                # wiec nie dodajemy zadania wystepujacego po nim
             Cmax.append(max(C))  # Cmax tego uszeregowania wyznaczany jako max(C), ponieważ musimy wybrać sciezke krytyczna (slajd 10)
         else:
-      # rozważenie przypadku wstawiania elementu w srodek uszeregowania
+            # rozważenie przypadku wstawiania elementu w srodek uszeregowania
 
             for j in range(len(tabela[element])):
                 # w wybranym uszeregowaniu (tutaj w seodu uszeregowania) wyznaczamy wage/obciazenie  tego zadana w przypadku gdyby
@@ -252,7 +252,7 @@ def neh_akceleracja(kolejnosc, obciazenie1, obciazenie2, tabela, element):
                 # wyznaczamy obciazenia dla kazdej maszyny wchodzacej w to zadanie i zapisujemy w liscie temp
                 # m = len(tabela[element] - ilosc maszyn
 
-                if j == 0:#przypadek rozwazajacy obciazenie 0 maszyny w pozycji zadania w srodku uszeregowania
+                if j == 0:  # przypadek rozwazajacy obciazenie 0 maszyny w pozycji zadania w srodku uszeregowania
 
                     temp.append(tabela[element][j] + obciazenie1[i - 1][j])
                     # dodawanie wyliczonego obciazenia maszyny w zadaniu do listy
@@ -262,13 +262,15 @@ def neh_akceleracja(kolejnosc, obciazenie1, obciazenie2, tabela, element):
                     temp.append(tabela[element][j] + max(obciazenie1[i - 1][j], temp[j - 1]))
                     # obciazenie prawostronne w tym uszeregowaniu dla maszyny j w pozycji zadania i(w srodu) liczymy
                     # dodajac do czasu pracy na maszynie j obciazenie1 z maszyny i-1
-                C.append(temp[j] + obciazenie2[i][j])# zsumowane wyliczone obciązenie 'prawostronne' maszyny j w uszeregowaniu na pozycji i
-                                                     # z obciazeniem lewostronnym zadania które w tym uszeregowaniu wystepowałoby po nim
-            Cmax.append(max(C))# Cmax tego uszeregowania wyznaczany jako max(C), ponieważ musimy wybrać sciezke krytyczna (slajd 10)
-    miejsce = Cmax.index(min(Cmax)) # mając Cmax dla kazdego uszeregowwania wybieramy to najlepsze, bierzemy jego i przypisujemy jako miejsce gdzie nalezy wstawic
-                                    # np wstawiajac 4 zadanie mamy mozliwe miejsce 0,1,2,3
-    kolejnosc.insert(miejsce, element)#wstawiamy element w wybrane miejsce
+                C.append(temp[j] + obciazenie2[i][j])  # zsumowane wyliczone obciązenie 'prawostronne' maszyny j w uszeregowaniu na pozycji i
+                # z obciazeniem lewostronnym zadania które w tym uszeregowaniu wystepowałoby po nim
+            Cmax.append(max(C))  # Cmax tego uszeregowania wyznaczany jako max(C), ponieważ musimy wybrać sciezke krytyczna (slajd 10)
+    miejsce = Cmax.index(min(Cmax))  # mając Cmax dla kazdego uszeregowwania wybieramy to najlepsze, bierzemy jego i przypisujemy jako miejsce gdzie nalezy wstawic
+    # np wstawiajac 4 zadanie mamy mozliwe miejsce 0,1,2,3
+    kolejnosc.insert(miejsce, element)  # wstawiamy element w wybrane miejsce
     return kolejnosc, min(Cmax)
+
+
 #
 
 

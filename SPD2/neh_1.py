@@ -1,6 +1,5 @@
-import itertools
-import math
 import time
+
 from prettytable import PrettyTable
 
 
