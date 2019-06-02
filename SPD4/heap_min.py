@@ -1,18 +1,19 @@
 import math
 
+
 def heap_parent(n):
-    if n !=0:
-        return math.floor((n-1)/2)
+    if n != 0:
+        return math.floor((n - 1) / 2)
     else:
         return 0
 
 
 def heap_left(n):
-    return (2*n+1)
+    return (2 * n + 1)
 
 
 def heap_right(n):
-    return (2*n+2)
+    return (2 * n + 2)
 
 
 def swap(L, left, right):
@@ -48,8 +49,8 @@ def fix_down(L, ipos, n, kolumna):
         if rpos < n and L[rpos][kolumna] < L[mpos][kolumna]:
             mpos = rpos
         if mpos == ipos:
-            break      # drzewo to sterta
-        else:              # trzeba zamienić z dzieckiem
+            break  # drzewo to sterta
+        else:  # trzeba zamienić z dzieckiem
             swap(L, mpos, ipos)
             # przesuwam węzeł o jeden poziom w dół
             ipos = mpos
@@ -58,27 +59,26 @@ def fix_down(L, ipos, n, kolumna):
 class Heap_min:
     """Implementacja sterty (kopca max)."""
 
-    def __init__(self,kolumna):
-        self.items = []         # tu trzymamy elementy sterty
+    def __init__(self, kolumna):
+        self.items = []  # tu trzymamy elementy sterty
         self.kolumna = kolumna
 
-    def __str__(self):              # podglądamy stertę
+    def __str__(self):  # podglądamy stertę
         return str(self.items)
 
     def t(self):
         return self.items[0][self.kolumna]
 
-
     def is_empty(self):
         return not self.items
 
-    def insert(self, item):                   # nie zwraca wartości
-        self.items.append(item)   # dodajemy na koniec tablicy
+    def insert(self, item):  # nie zwraca wartości
+        self.items.append(item)  # dodajemy na koniec tablicy
         # ponowne przekształcenie drzewa w stertę
-        fix_up(self.items, len(self.items)-1, self.kolumna)
+        fix_up(self.items, len(self.items) - 1, self.kolumna)
 
     def remove(self):  # zwraca element największy
-        k = len(self.items)-1
+        k = len(self.items) - 1
         # najpierw największy na koniec
         swap(self.items, 0, k)
         # trzeba poprawić drzewo, zaczynam od góry
@@ -86,5 +86,5 @@ class Heap_min:
         fix_down(self.items, 0, k, self.kolumna)
         return self.items.pop()
 
-    def count(self):      # liczba elementów na stercie
+    def count(self):  # liczba elementów na stercie
         return len(self.items)

@@ -1,6 +1,7 @@
-import random
-import math
 import copy
+import random
+
+import math
 
 
 def odczyt(nazwa):
@@ -21,6 +22,7 @@ def obliczenie_Cmax(kolejnosc, tabela):
         Cmax = max(Cmax, p + tabela[a][2])
     return Cmax
 
+
 def przygotowanie_danych(nazwa):
     Wartosci = odczyt(nazwa)
     tabela = []
@@ -39,6 +41,8 @@ def przygotowanie_danych(nazwa):
 Od tego miejsca zaczynają sie przydatne funkcje
 
 """
+
+
 # inicjalizacja 1. rozwiazania ale tez ustawienie parametrów
 
 
@@ -55,6 +59,7 @@ def generowanie_ruchu_swap(rozwiazanie):
     rozwiazanie_swap = copy.deepcopy(rozwiazanie)
     rozwiazanie_swap[pozycje[1]], rozwiazanie_swap[pozycje[0]] = para
     return rozwiazanie_swap
+
 
 # tworzenie ruchu typu insert
 
@@ -78,7 +83,7 @@ def decyzja(cmax_przed, cmax_po, rozwiazanie_po, rozwiazanie_przed):
     if cmax_po < cmax_przed:
         return rozwiazanie_po, cmax_po
     else:  # rozpisane tak dokładnie aby istniala mozliwosc sledzenia wartosci prawdopodobienstwa w debuggerze
-        p = math.exp((cmax_przed-cmax_po)/Temperatura)
+        p = math.exp((cmax_przed - cmax_po) / Temperatura)
         prand = random.random()
         if p >= prand:
             return rozwiazanie_po, cmax_po
@@ -87,9 +92,8 @@ def decyzja(cmax_przed, cmax_po, rozwiazanie_po, rozwiazanie_przed):
 
 
 # alternatywna funkcja decyzyjna, nie dajemy 1 dla lepszych rozwiazan
-def decyzja_mod(cmax_przed, cmax_po,  rozwiazanie_po, rozwiazanie_przed):
-
-    p = math.exp((cmax_przed-cmax_po)/Temperatura)
+def decyzja_mod(cmax_przed, cmax_po, rozwiazanie_po, rozwiazanie_przed):
+    p = math.exp((cmax_przed - cmax_po) / Temperatura)
     prand = random.random()
     if p >= prand:
         return rozwiazanie_po, cmax_po
@@ -99,15 +103,15 @@ def decyzja_mod(cmax_przed, cmax_po,  rozwiazanie_po, rozwiazanie_przed):
 
 # podstawowa funkcja schladzania
 def schladzanie(temp):
-    temp = Wspolczynnik_schladzania*temp
+    temp = Wspolczynnik_schladzania * temp
     return temp
 
 
 # aletrnatywna funkcja schladzania
 def schladzanie2(temp, k, kmax):
-
-    temp = temp*k/kmax
+    temp = temp * k / kmax
     return temp
+
 
 Temperatura = 5
 Wspolczynnik_schladzania = 0.95

@@ -1,4 +1,6 @@
 import operator
+
+
 def odczyt(nazwa):
     theFile = open(nazwa, "r")
     theFloats = []
@@ -20,7 +22,7 @@ def przygotowanie_danych(nazwa):
         for b in range(0, 3):
             tabela_pomocnicza = tabela_pomocnicza + [Wartosci[a + b]]
         tabela.append(tabela_pomocnicza)
-    return tabela, n
+    return tabela, nŁ
 
 
 def schrage(N):
@@ -47,7 +49,7 @@ def schrage(N):
             NG.pop(i)
             teta.append(j[0])
             t = t + j[2]
-            Cmax = max(Cmax, t+j[3])
+            Cmax = max(Cmax, t + j[3])
     return teta, Cmax
 
 
@@ -80,5 +82,5 @@ def schragepmtn(N):
             NG.pop(i)
             l = j
             t = t + j[2]
-            Cmax = max(Cmax, t+j[3])
+            Cmax = max(Cmax, t + j[3])
     return Cmax
